@@ -2,23 +2,25 @@ const { Router } = require("express");
 const router = Router();
 
 const {
-  getRegistros,
-  createRegistro,
-  selecRegistro,
-  deleteRegistro,
-  getAllregistros,
-  updateRegistro,
-  getFilteredRegistros,
-  getStatistics
+  checkDatabaseConnection,
+    createRegistroPcd,
+    updateRegistroPcd,
+    getRegistrosByMunicipio,
+    createUsuario,
+    loginUsuario,
+    editUsuario,
+    deleteUsuario,
+    getUsuariosByMunicipio
 } = require("../controllers/data.controllers");
 
-router.get("/registro", getRegistros);
-router.get("/AllRegistro", getAllregistros);
-router.get("/registro/:id_registro", selecRegistro);
-router.get("/filterRegistro", getFilteredRegistros);
-router.get("/statistics", getStatistics);
-router.post("/registro", createRegistro);
-router.delete("/registro/:id_registro", deleteRegistro);
-router.put("/registro/:id_registro", updateRegistro);
+router.get("/check", checkDatabaseConnection);
+router.post("/registro-pcd/:id_usuario", createRegistroPcd);
+router.put("/registro-pcd/:id_registro_discapacidad", updateRegistroPcd);
+router.get("/registros-pcd/:id_municipio", getRegistrosByMunicipio);
+router.post("/usuario/:id_municipio", createUsuario);
+router.put("/usuario/:id_usuario", editUsuario);
+router.delete("/usuario/:id_usuario", deleteUsuario);
+router.get("/usuarios/:id_municipio", getUsuariosByMunicipio);
+router.post("/login", loginUsuario);
 
 module.exports = router;

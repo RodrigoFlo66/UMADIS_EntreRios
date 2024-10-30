@@ -1,526 +1,435 @@
+const bcrypt = require('bcrypt'); 
 const pool = require("../db");
-function getCategoriaEdad(edad) {
-  if (edad > 0 && edad < 12) {
-      return "NIÑA/O";
-  } else if (edad >= 12 && edad < 18) {
-      return "ADOLESCENTE";
-  } else if (edad >= 18 && edad <= 60) {
-      return "MAYOR DE EDAD";
-  } else if (edad > 60) {
-      return "ADULTO MAYOR";
-  } else {
-      return "Edad inválida";
+
+const checkDatabaseConnection = async (req, res) => {
+  try {
+    // Ejecutar una consulta simple para comprobar la conexión
+    const result = await pool.query("SELECT NOW()");
+    return res.json({
+      message: 'Database connection successful',
+      currentDate: result.rows[0].now,
+    });
+  } catch (error) {
+    console.error('Error executing query', error);
+    return res.status(500).json({ error: 'Error executing query' });
   }
 }
-const getRegistros = async (req, res) => {
-  const { page = 1, limit = 15 } = req.query; // Obtener los parámetros de paginación
-  const offset = (page - 1) * limit;
 
+//REGISTRO_PCD//
+const getRegistrosByMunicipio = async (req, res) => {
+  const { id_municipio } = req.params;
   try {
-    const result = await pool.query("SELECT * FROM REGISTRO LIMIT $1 OFFSET $2", [limit, offset]);
-    const total = await pool.query("SELECT COUNT(*) FROM REGISTRO");
+    const query = `
+      SELECT 
+        r.id_registro_discapacidad,
+        r.nombre_apellido,
+        r.fecha_nacimiento,
+        r.edad,
+        r.sexo,
+        r.nro_ci,
+        r.estado_civil,
+        r.idioma_pcd,
+        r.tipo_discapacidad,
+        r.grado_discapacidad,
+        r.deficiencia,
+        r.edad_inicio_discapacidad,
+        r.dispositivo_utiliza,
+        r.nivel_escolaridad,
+        r.info_vivienda,
+        r.info_laboral,
+        r.nombre_familiar,
+        r.nro_hijos_pcd,
+        r.conyuge_pcd,
+        r.direc_domicilio,
+        r.distrito_domicilio,
+        r.telefono_pdc,
+        r.telefono_referencia,
+        r.permanencia,
+        r.motivo_cierre,
+        r.id_usuario
+      FROM public.REGISTRO_PCD r
+      JOIN public.USUARIO u ON r.id_usuario = u.id_usuario
+      WHERE u.id_municipio = $1;
+    `;
+    const result = await pool.query(query, [id_municipio]);
+
+    // Retornar una respuesta con los registros encontrados
     return res.json({
-      data: result.rows,
-      total: parseInt(total.rows[0].count, 10),
-      page: parseInt(page, 10),
-      limit: parseInt(limit, 10)
+      message: 'Registros obtenidos exitosamente',
+      data: result.rows
     });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
+  } catch (error) {
+    console.error('Error al obtener los registros:', error);
+    return res.status(500).json({ error: 'Error al obtener los registros' });
   }
 };
-const getAllregistros = async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM REGISTRO");
-    const total = await pool.query("SELECT COUNT(*) FROM REGISTRO");
-    return res.json({
-      data: result.rows,
-      total: parseInt(total.rows[0].count, 10),
-    });
-  } catch (error) {
-    console.error('Error executing query', error);
-    return res.status(500).json({ error: 'Error executing query' });
-  }
-
-}
-const getFilteredRegistros = async (req, res) => {
-  try {
-    // Decodificar los filtros de los parámetros de la URL
-    const filters = Object.fromEntries(
-      Object.entries(req.query).map(([key, value]) => [key, decodeURIComponent(value)])
-    );
-
-    let query = "SELECT * FROM REGISTRO";
-    const queryParams = [];
-    const conditions = [];
-
-    // Construir dinámicamente las condiciones de la consulta SQL
-    Object.keys(filters).forEach((key) => {
-      if (filters[key]) {
-        // Para campos que pueden tener múltiples valores
-        if (filters[key].includes(',')) {
-          const values = filters[key].split(',').map(value => value.trim());
-
-          if (key === 'idioma_hablado') {
-             // Usar AND para 'idioma_hablado' sin LOWER
-             const subConditions = values.map((value) => {
-              queryParams.push(`%${value}%`);
-              return `${key} LIKE $${queryParams.length}`;
-            });
-            conditions.push(`(${subConditions.join(' AND ')})`);
-          } else {
-            if(key === 'categoria_edad'){
-              const subConditions = values.map((value) => {
-                queryParams.push(`%${value}%`);
-                return `${key} LIKE $${queryParams.length}`;
-              });
-              conditions.push(`(${subConditions.join(' OR ')})`);
-            }else{
-              // Usar OR para otros campos
-              const subConditions = values.map((value) => {
-                queryParams.push(`%${value}%`);
-                return `LOWER(${key}) LIKE $${queryParams.length}`;
-              });
-              conditions.push(`(${subConditions.join(' OR ')})`);
-            }
-          }
-        } else {
-          if (key === 'idioma_hablado') {
-            // Usar AND para 'idioma_hablado' sin LOWER
-            queryParams.push(`%${filters[key]}%`);
-            conditions.push(`${key} LIKE $${queryParams.length}`);
-          } else{
-            if (key === 'categoria_edad') {
-              queryParams.push(`%${filters[key]}%`);
-              conditions.push(`${key} LIKE $${queryParams.length}`);
-            }else{
-              queryParams.push(`%${filters[key].toLowerCase()}%`);
-              conditions.push(`LOWER(${key}) LIKE $${queryParams.length}`);
-            }
-          }
-        }
-      }
-    });
-
-    // Agregar condiciones a la consulta si existen
-    if (conditions.length > 0) {
-      query += " WHERE " + conditions.join(' AND ');
-    }
-
-    // Ejecutar consulta
-    const result = await pool.query(query, queryParams);
-    return res.json({
-      data: result.rows,
-      total: result.rowCount,
-    });
-  } catch (error) {
-    console.error('Error executing query', error);
-    return res.status(500).json({ error: 'Error executing query' });
-  }
-};
-
-
-const createRegistro = async (req, res) => {
-  const { 
-    nombre_completo,
-    ci,
+const createRegistroPcd = async (req, res) => {
+  const {
+    nombre_apellido,
     fecha_nacimiento,
-    estado_civil,
-    idioma_hablado,
     edad,
-    genero,
-    nro_carnet_discapacidad,
-    fechaExp_carnet_discapacidad,
-    fechaVen_carnet_discapacidad,
-    direccion_domicilio,
-    otb_domicilio,
-    distrito_domicilio,
-    domicilio_verificado,
-    lugar_origen,
-    celular,
-    fallecido,
+    sexo,
+    nro_ci,
+    estado_civil,
+    idioma_pcd,
     tipo_discapacidad,
     grado_discapacidad,
-    causa_discapacidad,
-    beneficio_bono,
-    independiente,
-    familiar_acargo,
-    afiliado_org,
-    nombre_org,
-    apoyo_tecnico,
-    nombre_apoyo,
-    tipo_medicamento,
-    rehabilitacion,
-    nombre_rehabilitacion,
-    nombre_seguro_salud,
-    intitucion_apoyo,
-    grado_academico,
-    nivel_academico,
-    estudia,
-    situacion_vivienda,
-    generacion_ingresos,
-    ocupacion,
-    trabaja,
-    insercion_laboral,
-    fecha_registro,
-    motivo_consulta,
-    situacion_actual,
-    especificar_causa
-   } = req.body;
-
-   try{
-    const categoriaEdad = getCategoriaEdad(edad);
-      const result = await pool.query(`
-        INSERT INTO REGISTRO (
-          nombre_completo,
-          ci,
-          fecha_nacimiento,
-          estado_civil,
-          idioma_hablado,
-          edad,
-          categoria_edad,
-          genero,
-          nro_carnet_discapacidad,
-          fechaExp_carnet_discapacidad,
-          fechaVen_carnet_discapacidad,
-          direccion_domicilio,
-          otb_domicilio,
-          distrito_domicilio,
-          domicilio_verificado,
-          lugar_origen,
-          celular,
-          fallecido,
-          tipo_discapacidad,
-          grado_discapacidad,
-          causa_discapacidad,
-          beneficio_bono,
-          independiente,
-          familiar_acargo,
-          afiliado_org,
-          nombre_org,
-          apoyo_tecnico,
-          nombre_apoyo,
-          tipo_medicamento,
-          rehabilitacion,
-          nombre_rehabilitacion,
-          nombre_seguro_salud,
-          intitucion_apoyo,
-          grado_academico,
-          nivel_academico,
-          estudia,
-          situacion_vivienda,
-          generacion_ingresos,
-          ocupacion,
-          trabaja,
-          insercion_laboral,
-          fecha_registro,
-          motivo_consulta,
-          situacion_actual,
-          especificar_causa
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-          $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40,
-          $41, $42, $43, $44, $45
-        )`,
-        [
-          nombre_completo,
-        ci,
-        fecha_nacimiento,
-        estado_civil,
-        idioma_hablado,
-        edad,
-        categoriaEdad,
-        genero,
-        nro_carnet_discapacidad,
-        fechaExp_carnet_discapacidad,
-        fechaVen_carnet_discapacidad,
-        direccion_domicilio,
-        otb_domicilio,
-        distrito_domicilio,
-        domicilio_verificado,
-        lugar_origen,
-        celular,
-        fallecido,
-        tipo_discapacidad,
-        grado_discapacidad,
-        causa_discapacidad,
-        beneficio_bono,
-        independiente,
-        familiar_acargo,
-        afiliado_org,
-        nombre_org,
-        apoyo_tecnico,
-        nombre_apoyo,
-        tipo_medicamento,
-        rehabilitacion,
-        nombre_rehabilitacion,
-        nombre_seguro_salud,
-        intitucion_apoyo,
-        grado_academico,
-        nivel_academico,
-        estudia,
-        situacion_vivienda,
-        generacion_ingresos,
-        ocupacion,
-        trabaja,
-        insercion_laboral,
-        fecha_registro,
-        motivo_consulta,
-        situacion_actual,
-        especificar_causa
-        ]);
-      return res.json(result);
-  } catch (error) {
-    console.error('Error executing query', error);
-    return res.status(500).json({ error: 'Error executing query' });
-  }
-}
-const updateRegistro = async (req, res) => {
-  const { id_registro } = req.params;
-  const {  
-    nombre_completo,
-    ci,
-    fecha_nacimiento,
-    estado_civil,
-    idioma_hablado,
-    edad,
-    genero,
-    nro_carnet_discapacidad,
-    fechaExp_carnet_discapacidad,
-    fechaVen_carnet_discapacidad,
-    direccion_domicilio,
-    otb_domicilio,
+    deficiencia,
+    edad_inicio_discapacidad,
+    dispositivo_utiliza,
+    nivel_escolaridad,
+    info_vivienda,
+    info_laboral,
+    nombre_familiar,
+    nro_hijos_pcd,
+    conyuge_pcd,
+    direc_domicilio,
     distrito_domicilio,
-    domicilio_verificado,
-    lugar_origen,
-    celular,
-    fallecido,
-    tipo_discapacidad,
-    grado_discapacidad,
-    causa_discapacidad,
-    beneficio_bono,
-    independiente,
-    familiar_acargo,
-    afiliado_org,
-    nombre_org,
-    apoyo_tecnico,
-    nombre_apoyo,
-    tipo_medicamento,
-    rehabilitacion,
-    nombre_rehabilitacion,
-    nombre_seguro_salud,
-    intitucion_apoyo,
-    grado_academico,
-    nivel_academico,
-    estudia,
-    situacion_vivienda,
-    generacion_ingresos,
-    ocupacion,
-    trabaja,
-    insercion_laboral,
-    fecha_registro,
-    motivo_consulta,
-    situacion_actual,
-    especificar_causa
+    telefono_pdc,
+    telefono_referencia,
+    permanencia,
+    motivo_cierre
   } = req.body;
 
+  const { id_usuario } = req.params; 
+
   try {
-    const categoriaEdad = getCategoriaEdad(edad);
-    const result = await pool.query(`
-      UPDATE REGISTRO SET
-        nombre_completo = $1,
-        ci = $2,
-        fecha_nacimiento = $3,
-        estado_civil = $4,
-        idioma_hablado = $5,
-        edad = $6,
-        categoria_edad = $7,
-        genero = $8,
-        nro_carnet_discapacidad = $9,
-        fechaExp_carnet_discapacidad = $10,
-        fechaVen_carnet_discapacidad = $11,
-        direccion_domicilio = $12,
-        otb_domicilio = $13,
-        distrito_domicilio = $14,
-        domicilio_verificado = $15,
-        lugar_origen = $16,
-        celular = $17,
-        fallecido = $18,
-        tipo_discapacidad = $19,
-        grado_discapacidad = $20,
-        causa_discapacidad = $21,
-        beneficio_bono = $22,
-        independiente = $23,
-        familiar_acargo = $24,
-        afiliado_org = $25,
-        nombre_org = $26,
-        apoyo_tecnico = $27,
-        nombre_apoyo = $28,
-        tipo_medicamento = $29,
-        rehabilitacion = $30,
-        nombre_rehabilitacion = $31,
-        nombre_seguro_salud = $32,
-        intitucion_apoyo = $33,
-        grado_academico = $34,
-        nivel_academico = $35,
-        estudia = $36,
-        situacion_vivienda = $37,
-        generacion_ingresos = $38,
-        ocupacion = $39,
-        trabaja = $40,
-        insercion_laboral = $41,
-        fecha_registro = $42,
-        motivo_consulta = $43,
-        situacion_actual = $44,
-        especificar_causa = $45
-      WHERE id_registro = $46
-    `, [
-      nombre_completo,
-      ci,
+    // Consulta SQL para insertar los datos en la tabla REGISTRO_PCD
+    const query = `
+      INSERT INTO public.REGISTRO_PCD (
+        nombre_apellido,
+        fecha_nacimiento,
+        edad,
+        sexo,
+        nro_ci,
+        estado_civil,
+        idioma_pcd,
+        tipo_discapacidad,
+        grado_discapacidad,
+        deficiencia,
+        edad_inicio_discapacidad,
+        dispositivo_utiliza,
+        nivel_escolaridad,
+        info_vivienda,
+        info_laboral,
+        nombre_familiar,
+        nro_hijos_pcd,
+        conyuge_pcd,
+        direc_domicilio,
+        distrito_domicilio,
+        telefono_pdc,
+        telefono_referencia,
+        permanencia,
+        motivo_cierre,
+        id_usuario
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25
+      ) RETURNING id_registro_discapacidad;
+    `;
+
+    // Ejecutar la consulta con los valores
+    const result = await pool.query(query, [
+      nombre_apellido,
       fecha_nacimiento,
-      estado_civil,
-      idioma_hablado,
       edad,
-      categoriaEdad,
-      genero,
-      nro_carnet_discapacidad,
-      fechaExp_carnet_discapacidad,
-      fechaVen_carnet_discapacidad,
-      direccion_domicilio,
-      otb_domicilio,
-      distrito_domicilio,
-      domicilio_verificado,
-      lugar_origen,
-      celular,
-      fallecido,
+      sexo,
+      nro_ci,
+      estado_civil,
+      idioma_pcd,
       tipo_discapacidad,
       grado_discapacidad,
-      causa_discapacidad,
-      beneficio_bono,
-      independiente,
-      familiar_acargo,
-      afiliado_org,
-      nombre_org,
-      apoyo_tecnico,
-      nombre_apoyo,
-      tipo_medicamento,
-      rehabilitacion,
-      nombre_rehabilitacion,
-      nombre_seguro_salud,
-      intitucion_apoyo,
-      grado_academico,
-      nivel_academico,
-      estudia,
-      situacion_vivienda,
-      generacion_ingresos,
-      ocupacion,
-      trabaja,
-      insercion_laboral,
-      fecha_registro,
-      motivo_consulta,
-      situacion_actual,
-      especificar_causa,
-      id_registro
+      deficiencia,
+      edad_inicio_discapacidad,
+      dispositivo_utiliza,
+      nivel_escolaridad,
+      info_vivienda,
+      info_laboral,
+      nombre_familiar,
+      nro_hijos_pcd,
+      conyuge_pcd,
+      direc_domicilio,
+      distrito_domicilio,
+      telefono_pdc,
+      telefono_referencia,
+      permanencia,
+      motivo_cierre,
+      id_usuario
     ]);
-    return res.json(result);
+
+    // Retornar una respuesta con el ID del nuevo registro creado
+    return res.json({
+      message: 'Registro creado exitosamente',
+      idRegistro: result.rows[0].id_registro_discapacidad
+    });
   } catch (error) {
-    console.error('Error executing query', error);
-    return res.status(500).json({ error: 'Error executing query' });
+    console.error('Error al crear el registro:', error);
+    return res.status(500).json({ error: 'Error al crear el registro' });
   }
 };
+const updateRegistroPcd = async (req, res) => {
+  const {
+    nombre_apellido,
+    fecha_nacimiento,
+    edad,
+    sexo,
+    nro_ci,
+    estado_civil,
+    idioma_pcd,
+    tipo_discapacidad,
+    grado_discapacidad,
+    deficiencia,
+    edad_inicio_discapacidad,
+    dispositivo_utiliza,
+    nivel_escolaridad,
+    info_vivienda,
+    info_laboral,
+    nombre_familiar,
+    nro_hijos_pcd,
+    conyuge_pcd,
+    direc_domicilio,
+    distrito_domicilio,
+    telefono_pdc,
+    telefono_referencia,
+    permanencia,
+    motivo_cierre
+  } = req.body;
 
-const deleteRegistro = async (req, res) => {
-  const { id_registro } = req.params;
-  const result = await pool.query("DELETE FROM REGISTRO WHERE id_registro = $1", [id_registro]);
-  return res.json(result);
-}
-const selecRegistro = async (req, res) => {
-  const { id_registro } = req.params;
-  const result = await pool.query("SELECT * FROM REGISTRO WHERE id_registro = $1", [id_registro]);
-  return res.json(result.rows);
-}
-const getStatistics = async (req, res) => {
+  const { id_registro_discapacidad } = req.params;
+
   try {
-      // Paso 1: Consultar los datos de la base de datos
-      const query = 'SELECT * FROM REGISTRO';
-      const { rows: data } = await pool.query(query);
+    // Consulta SQL para actualizar los datos del registro
+    const query = `
+      UPDATE public.REGISTRO_PCD SET
+        nombre_apellido = COALESCE($1, nombre_apellido),
+        fecha_nacimiento = COALESCE($2, fecha_nacimiento),
+        edad = COALESCE($3, edad),
+        sexo = COALESCE($4, sexo),
+        nro_ci = COALESCE($5, nro_ci),
+        estado_civil = COALESCE($6, estado_civil),
+        idioma_pcd = COALESCE($7, idioma_pcd),
+        tipo_discapacidad = COALESCE($8, tipo_discapacidad),
+        grado_discapacidad = COALESCE($9, grado_discapacidad),
+        deficiencia = COALESCE($10, deficiencia),
+        edad_inicio_discapacidad = COALESCE($11, edad_inicio_discapacidad),
+        dispositivo_utiliza = COALESCE($12, dispositivo_utiliza),
+        nivel_escolaridad = COALESCE($13, nivel_escolaridad),
+        info_vivienda = COALESCE($14, info_vivienda),
+        info_laboral = COALESCE($15, info_laboral),
+        nombre_familiar = COALESCE($16, nombre_familiar),
+        nro_hijos_pcd = COALESCE($17, nro_hijos_pcd),
+        conyuge_pcd = COALESCE($18, conyuge_pcd),
+        direc_domicilio = COALESCE($19, direc_domicilio),
+        distrito_domicilio = COALESCE($20, distrito_domicilio),
+        telefono_pdc = COALESCE($21, telefono_pdc),
+        telefono_referencia = COALESCE($22, telefono_referencia),
+        permanencia = COALESCE($23, permanencia),
+        motivo_cierre = COALESCE($24, motivo_cierre)
+      WHERE id_registro_discapacidad = $25
+      RETURNING id_registro_discapacidad;
+    `;
 
-      const totalRecords = data.length;
+    // Ejecutar la consulta con los valores del body y el ID del registro
+    const result = await pool.query(query, [
+      nombre_apellido,
+      fecha_nacimiento,
+      edad,
+      sexo,
+      nro_ci,
+      estado_civil,
+      idioma_pcd,
+      tipo_discapacidad,
+      grado_discapacidad,
+      deficiencia,
+      edad_inicio_discapacidad,
+      dispositivo_utiliza,
+      nivel_escolaridad,
+      info_vivienda,
+      info_laboral,
+      nombre_familiar,
+      nro_hijos_pcd,
+      conyuge_pcd,
+      direc_domicilio,
+      distrito_domicilio,
+      telefono_pdc,
+      telefono_referencia,
+      permanencia,
+      motivo_cierre,
+      id_registro_discapacidad
+    ]);
 
-      // Paso 2: Calcular las estadísticas
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Registro no encontrado' });
+    }
 
-      // Conteo y porcentaje de género
-      const genderCount = {};
-      data.forEach(record => {
-          const gender = record.genero || 'No especificado';
-          genderCount[gender] = (genderCount[gender] || 0) + 1;
-      });
-
-      const genderPercentage = Object.entries(genderCount).map(([key, value]) => ({
-          gender: key,
-          percentage: ((value / totalRecords) * 100).toFixed(2)
-      }));
-
-      // Promedio de edad
-      const ages = data.map(record => record.edad).filter(age => age !== null);
-      const averageAge = (ages.reduce((acc, age) => acc + age, 0) / ages.length).toFixed(2);
-
-      // Estado civil más repetido
-      const civilStatusCount = {};
-      data.forEach(record => {
-          const status = record.estado_civil || 'No especificado';
-          civilStatusCount[status] = (civilStatusCount[status] || 0) + 1;
-      });
-
-      const mostCommonCivilStatus = Object.entries(civilStatusCount).reduce((max, entry) => entry[1] > max[1] ? entry : max)[0];
-
-      // Grado académico más repetido
-      const academicDegreeCount = {};
-      data.forEach(record => {
-          const degree = record.grado_academico || 'No especificado';
-          academicDegreeCount[degree] = (academicDegreeCount[degree] || 0) + 1;
-      });
-
-      const mostCommonAcademicDegree = Object.entries(academicDegreeCount).reduce((max, entry) => entry[1] > max[1] ? entry : max)[0];
-
-      // Porcentaje y cantidad de fallecidos
-      const deceasedCount = { 'SI': 0, 'NO': 0, 'No especificado': 0 };
-      data.forEach(record => {
-          const deceased = record.fallecido || 'No especificado';
-          deceasedCount[deceased] = (deceasedCount[deceased] || 0) + 1;
-      });
-
-      const deceasedPercentage = {
-          fallecido: ((deceasedCount['SI'] / totalRecords) * 100).toFixed(2),
-          no_fallecido: ((deceasedCount['NO'] / totalRecords) * 100).toFixed(2)
-      };
-
-      // Paso 3: Retornar los datos estadísticos
-      return res.json({
-          totalRecords,
-          genderCount,
-          genderPercentage,
-          averageAge,
-          mostCommonCivilStatus,
-          mostCommonAcademicDegree,
-          deceasedCount,
-          deceasedPercentage
-      });
+    // Retornar una respuesta de éxito
+    return res.json({
+      message: 'Registro actualizado exitosamente',
+      idRegistro: result.rows[0].id_registro_discapacidad
+    });
   } catch (error) {
-      console.error('Error al obtener estadísticas:', error);
-      return res.status(500).json({ error: 'Error al obtener estadísticas' });
+    console.error('Error al actualizar el registro:', error);
+    return res.status(500).json({ error: 'Error al actualizar el registro' });
   }
 };
+//USUARIO//
+const createUsuario = async (req, res) => {
+  const { nombre_usuario, pasword, nivel_usuario } = req.body;
+  const { id_municipio } = req.params;
+  try {
+    // Hashear la contraseña antes de guardarla
+    const hashedPassword = await bcrypt.hash(pasword, 10); // Usando un factor de costo de 10
+    const query = `
+      INSERT INTO public.USUARIO (
+        nombre_usuario,
+        pasword,
+        nivel_usuario,
+        id_municipio
+      ) VALUES (
+        $1, $2, $3, $4
+      ) RETURNING id_usuario;
+    `;
+    const result = await pool.query(query, [
+      nombre_usuario,
+      hashedPassword, // Contraseña hasheada
+      nivel_usuario,
+      id_municipio
+    ]);
 
+    // Retornar una respuesta con el ID del nuevo usuario creado
+    return res.json({
+      message: 'Usuario creado exitosamente',
+      idUsuario: result.rows[0].id_usuario
+    });
+  } catch (error) {
+    console.error('Error al crear el usuario:', error);
+    return res.status(500).json({ error: 'Error al crear el usuario' });
+  }
+};
+const editUsuario = async (req, res) => {
+  const { id_usuario } = req.params;
+  const { nombre_usuario, pasword, nivel_usuario } = req.body;
+
+  try {
+    // Hashear la nueva contraseña solo si se proporciona en la solicitud
+    let hashedPassword;
+    if (pasword) {
+      hashedPassword = await bcrypt.hash(pasword, 10);
+    }
+
+    // Construir la consulta SQL de actualización con los valores proporcionados
+    const query = `
+      UPDATE public.USUARIO
+      SET 
+        nombre_usuario = COALESCE($1, nombre_usuario),
+        pasword = COALESCE($2, pasword),
+        nivel_usuario = COALESCE($3, nivel_usuario)
+      WHERE id_usuario = $4
+      RETURNING id_usuario, nombre_usuario, nivel_usuario;
+    `;
+
+    // Ejecutar la consulta de actualización
+    const result = await pool.query(query, [
+      nombre_usuario || null,
+      hashedPassword || null,
+      nivel_usuario || null,
+      id_usuario,
+    ]);
+
+    // Comprobar si se realizó alguna actualización
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Retornar la información del usuario actualizado
+    return res.json({
+      message: 'Usuario actualizado correctamente',
+      usuario: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error al actualizar usuario:', error);
+    return res.status(500).json({ error: 'Error al actualizar usuario' });
+  }
+};
+const deleteUsuario = async (req, res) => {
+  const { id_usuario } = req.params;
+  try {
+    const query = `
+      DELETE FROM public.USUARIO
+      WHERE id_usuario = $1
+      RETURNING id_usuario;
+    `;
+    const result = await pool.query(query, [id_usuario]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Retornar una respuesta confirmando la eliminación del usuario
+    return res.json({
+      message: 'Usuario eliminado exitosamente',
+      idUsuario: result.rows[0].id_usuario
+    });
+  } catch (error) {
+    console.error('Error al eliminar el usuario:', error);
+    return res.status(500).json({ error: 'Error al eliminar el usuario' });
+  }
+};
+const getUsuariosByMunicipio = async (req, res) => {
+  const { id_municipio } = req.params;
+  try {
+    const query = `
+      SELECT id_usuario, nombre_usuario, nivel_usuario
+      FROM public.USUARIO
+      WHERE id_municipio = $1;
+    `;
+    const result = await pool.query(query, [id_municipio]);
+    return res.json({
+      message: 'Usuarios obtenidos exitosamente',
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Error al obtener los usuarios:', error);
+    return res.status(500).json({ error: 'Error al obtener los usuarios' });
+  }
+};
+const loginUsuario = async (req, res) => {
+  const { nombre_usuario, pasword } = req.body;
+
+  try {
+    const query = `SELECT id_usuario, pasword FROM public.USUARIO WHERE nombre_usuario = $1`;
+    const result = await pool.query(query, [nombre_usuario]);
+
+    // Verificar si el usuario existe
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const usuario = result.rows[0];
+
+    // Comparar la contraseña ingresada con la almacenada usando bcrypt
+    const passwordMatch = await bcrypt.compare(pasword, usuario.pasword);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Contraseña incorrecta' });
+    }
+    return res.json({
+      message: 'Inicio de sesión exitoso',
+      idUsuario: usuario.id_usuario
+    });
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    return res.status(500).json({ error: 'Error al iniciar sesión' });
+  }
+};
 
 module.exports = {
-    getRegistros,
-    createRegistro,
-    selecRegistro,
-    deleteRegistro,
-    getAllregistros,
-    updateRegistro,
-    getFilteredRegistros,
-    getStatistics
+    checkDatabaseConnection,
+    createRegistroPcd,
+    updateRegistroPcd,
+    getRegistrosByMunicipio,
+    createUsuario,
+    loginUsuario,
+    editUsuario,
+    deleteUsuario,
+    getUsuariosByMunicipio
 }

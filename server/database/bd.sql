@@ -1,51 +1,63 @@
-
-CREATE TABLE REGISTRO (
-    id_registro INTEGER NOT NULL,
-    nombre_completo VARCHAR NOT NULL,
-    ci INTEGER,
-    fecha_nacimiento DATE,
-    estado_civil VARCHAR,
-    idioma_hablado VARCHAR,
-    edad INTEGER,
-    categoria_edad VARCHAR,
-    genero VARCHAR,
-    nro_carnet_discapacidad INTEGER,
-    fechaExp_carnet_discapacidad DATE,
-    fechaVen_carnet_discapacidad DATE,
-    direccion_domicilio VARCHAR,
-    otb_domicilio VARCHAR,
-    distrito_domicilio VARCHAR,
-    domicilio_verificado VARCHAR,
-    lugar_origen VARCHAR,
-    celular INTEGER,
-    fallecido VARCHAR,
-    tipo_discapacidad VARCHAR,
-    grado_discapacidad VARCHAR,
-    causa_discapacidad VARCHAR,
-    beneficio_bono VARCHAR,
-    independiente VARCHAR,
-    familiar_acargo VARCHAR,
-    afiliado_org VARCHAR,
-    nombre_org VARCHAR,
-    apoyo_tecnico VARCHAR,
-    nombre_apoyo VARCHAR,
-    tipo_medicamento VARCHAR,
-    rehabilitacion VARCHAR,
-    nombre_rehabilitacion VARCHAR,
-    nombre_seguro_salud VARCHAR,
-    intitucion_apoyo VARCHAR,
-    grado_academico VARCHAR,
-    nivel_academico VARCHAR,
-    estudia VARCHAR,
-    situacion_vivienda VARCHAR,
-    generacion_ingresos VARCHAR,
-    ocupacion VARCHAR,
-    trabaja VARCHAR,
-    insercion_laboral VARCHAR,
-    fecha_registro DATE,
-    motivo_consulta VARCHAR,
-    situacion_actual VARCHAR,
-    CONSTRAINT id_registro PRIMARY KEY (id_registro)
+CREATE TABLE public.MUNICIPIO (
+    id_municipio SERIAL PRIMARY KEY,
+    nombre_municipio VARCHAR(100) NOT NULL
 );
 
- \copy REGISTRO (id_registro, nombre_completo, ci, fecha_nacimiento, genero, direccion_domicilio, celular, tipo_discapacidad, grado_discapacidad, fecha_registro) FROM 'C:\Users\user\Desktop\Proyectos\DATOS_punata_limpio2.csv' WITH (FORMAT csv, HEADER true, DELIMITER ',');
+CREATE TABLE public.USUARIO (
+    id_usuario SERIAL PRIMARY KEY,
+    nombre_usuario VARCHAR(100) NOT NULL,
+    pasword VARCHAR(255) NOT NULL,
+    nivel_usuario VARCHAR(20) NOT NULL,
+    id_municipio INTEGER NOT NULL,
+    CONSTRAINT municipio_usuario_fk FOREIGN KEY (id_municipio)
+        REFERENCES public.MUNICIPIO (id_municipio)
+);
+
+CREATE TABLE public.REGISTRO_PCD (
+    id_registro_discapacidad SERIAL PRIMARY KEY,
+    nombre_apellido VARCHAR(100) NOT NULL,
+    fecha_nacimiento DATE,
+    edad INTEGER,
+    sexo VARCHAR(50),
+    nro_ci INTEGER,
+    estado_civil VARCHAR(50),
+    idioma_pcd VARCHAR(50),
+    tipo_discapacidad VARCHAR(50),
+    grado_discapacidad VARCHAR(50),
+    deficiencia VARCHAR(100),
+    edad_inicio_discapacidad INTEGER,
+    dispositivo_utiliza VARCHAR(100),
+    nivel_escolaridad VARCHAR(50),
+    info_vivienda VARCHAR(100),
+    info_laboral VARCHAR(100),
+    nombre_familiar VARCHAR(100),
+    nro_hijos_pcd INTEGER,
+    conyuge_pcd VARCHAR(100),
+    direc_domicilio VARCHAR(255),
+    distrito_domicilio VARCHAR(100),
+    telefono_pdc VARCHAR(20),
+    telefono_referencia VARCHAR(20), 
+    permanencia VARCHAR(20),
+    motivo_cierre VARCHAR(100),
+    id_usuario INTEGER NOT NULL,
+    CONSTRAINT usuario_registro_pcd_fk FOREIGN KEY (id_usuario)
+        REFERENCES public.USUARIO (id_usuario)
+);
+
+CREATE TABLE public.REGISTRO_ATENCION_PCD (
+    id_registro_atencion SERIAL PRIMARY KEY,
+    fecha_registro DATE NOT NULL,
+    lugar_registro VARCHAR(100) NOT NULL,
+    nombre_pcd VARCHAR(100) NOT NULL,
+    atencion_realizada VARCHAR(255),
+    area_atencion VARCHAR(50) NOT NULL,
+    donacion VARCHAR(100),
+    nombre_informante VARCHAR(100) NOT NULL,
+    link_adjunto VARCHAR(255),
+    id_usuario INTEGER NOT NULL,
+    id_registro_discapacidad INTEGER NOT NULL,
+    CONSTRAINT usuario_registro_atencion_pcd_fk FOREIGN KEY (id_usuario)
+        REFERENCES public.USUARIO (id_usuario),
+    CONSTRAINT registro_pcd_registro_atencion_pcd_fk FOREIGN KEY (id_registro_discapacidad)
+        REFERENCES public.REGISTRO_PCD (id_registro_discapacidad)
+);
