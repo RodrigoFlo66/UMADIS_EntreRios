@@ -1,0 +1,16 @@
+/* Estilo por defecto para móviles: las mitades se muestran una debajo de la otra */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* En pantallas medianas o grandes, mostrar las mitades lado a lado */
+@media (min-width: 768px) {
+    .form-container {
+        flex-direction: row;
+    }
+    .form-half {
+        flex: 1; /* Cada mitad ocupa el 50% del contenedor principal */
+    }
+}

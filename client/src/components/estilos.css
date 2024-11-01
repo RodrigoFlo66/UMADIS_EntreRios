@@ -1,0 +1,174 @@
+/* Estilo por defecto para móviles: las mitades se muestran una debajo de la otra */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* En pantallas medianas o grandes, mostrar las mitades lado a lado */
+@media (min-width: 768px) {
+  .form-container {
+      flex-direction: row;
+  }
+  .form-half {
+      flex: 1; /* Cada mitad ocupa el 50% del contenedor principal */
+  }
+}
+
+body {
+  padding-top: 55px; /* Altura de la navbar fija */
+  padding-bottom: 60px; /* Altura del footer */
+}
+  .table-hover tbody tr:hover {
+    background-color: #f5f5f5; /* Cambia el color de fondo cuando se pasa el cursor */
+    cursor: pointer; /* Cambia el cursor a un puntero para indicar que es interactivo */
+  }
+  
+  .table-clicked {
+    background-color: #e0e0e0; /* Cambia el color de fondo cuando se hace clic */
+  }
+
+  
+  .btn-danger {
+    margin-left: 5px;
+  }
+  
+  
+  .pagination-container .btn {
+    margin: 0 5px;
+  }
+  
+  .pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+  }
+  
+  .pagination-container span {
+    margin-right: 20px;
+  }
+  #message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+    display: none; /* Ocultar por defecto */
+  }
+  
+  .alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+  }
+  
+  .alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+  }
+  
+  .alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+  }
+  
+  
+  .button-container {
+    position: fixed;
+    right: 20px; /* Distancia desde el borde derecho de la pantalla */
+    top: 60px; /* Distancia desde el borde superior de la pantalla */
+    display: flex;
+    flex-direction: column; /* Coloca los botones uno debajo del otro */
+    gap: 8px; /* Espacio entre los botones */
+    z-index: 1000; /* Asegura que los botones estén por encima de otros elementos */
+}
+
+.button-container button {
+   position: absolute;
+    visibility: hidden; /* Oculta el botón pero mantiene su espacio */
+}
+
+.button-container button.visible {
+    visibility: visible; /* Muestra el botón */
+    position: static; /* Mantiene el botón en el flujo del documento */
+}
+/* Añadir estos estilos a tu archivo CSS */
+#statsModalContentRow p, #statsModalContentRow ul {
+  margin-bottom: 1rem;
+}
+
+#statsModalContentRow h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+#statsModalContentRow ul {
+  padding-left: 1.5rem;
+}
+
+#statsModalContentRow li {
+  margin-bottom: 0.5rem;
+}
+
+body, html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 100px; /* Ajusta según la altura del footer */
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #f2f6fa;
+  height: 60px; /* Ajusta según sea necesario */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px; /* Ajusta según sea necesario */
+}
+footer .container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+footer .container img {
+  max-width: 150px; /* Ajusta según sea necesario */
+  height: auto;
+}
+footer .container img.logo-punata {
+  max-width: 50px; /* Ajusta según sea necesario */
+  height: auto;
+}
+footer .container .logo-left {
+  margin-left: 0;
+}
+
+footer .container .logo-right {
+  margin-right: 0;
+}
+
+#dataList .tabulator-row {
+  cursor: pointer; /* Cambia el cursor a "pointer" */
+  transition: background-color 0.3s ease; /* Transición suave para el fondo */
+}
+
+#dataList .tabulator-row:hover {
+  background-color: #f7e0e0; /* Cambia el fondo cuando pasas el cursor */
+}

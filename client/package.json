@@ -1,0 +1,30 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "electron .",
+    "serve": "npm run build && npm run start",
+    "pack": "electron-packager . UMADIS-PUNATA --platform=win32 --arch=x64 --icon=src/icon/icon.ico --out=dist --overwrite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.1.6",
+    "electron": "^31.2.1",
+    "electron-reload": "^2.0.0-alpha.1",
+    "file-saver": "^2.0.5",
+    "formik": "^2.4.6",
+    "tabulator-tables": "^6.3.0"
+  },
+  "devDependencies": {
+    "electron-packager": "^17.1.2",
+    "vite": "^5.4.10"
+  }
+}
