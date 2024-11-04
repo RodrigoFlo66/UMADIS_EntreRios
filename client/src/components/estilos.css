@@ -164,6 +164,7 @@ footer .container .logo-right {
   margin-right: 0;
 }
 
+
 #dataList .tabulator-row {
   cursor: pointer; /* Cambia el cursor a "pointer" */
   transition: background-color 0.3s ease; /* Transición suave para el fondo */
@@ -171,4 +172,13 @@ footer .container .logo-right {
 
 #dataList .tabulator-row:hover {
   background-color: #f7e0e0; /* Cambia el fondo cuando pasas el cursor */
+}
+
+#confirmModal {
+  z-index: 1060 !important; /* Valor más alto que los otros modales */
+}
+
+/* Asegúrate también de que el fondo (backdrop) del modal tenga un z-index alto */
+.modal-backdrop.confirm-backdrop {
+  z-index: 1059 !important;
 }

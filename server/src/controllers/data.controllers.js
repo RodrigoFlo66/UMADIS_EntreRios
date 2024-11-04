@@ -16,6 +16,56 @@ const checkDatabaseConnection = async (req, res) => {
 }
 
 //REGISTRO_PCD//
+const getRegistroById = async (req, res) => {
+  const { id_registro_discapacidad } = req.params;
+  try {
+    const query = `
+      SELECT 
+        r.id_registro_discapacidad,
+        r.nombre_apellido,
+        r.fecha_nacimiento,
+        r.edad,
+        r.sexo,
+        r.nro_ci,
+        r.estado_civil,
+        r.idioma_pcd,
+        r.tipo_discapacidad,
+        r.grado_discapacidad,
+        r.deficiencia,
+        r.edad_inicio_discapacidad,
+        r.dispositivo_utiliza,
+        r.nivel_escolaridad,
+        r.info_vivienda,
+        r.info_laboral,
+        r.nombre_familiar,
+        r.nro_hijos_pcd,
+        r.conyuge_pcd,
+        r.direc_domicilio,
+        r.distrito_domicilio,
+        r.telefono_pdc,
+        r.telefono_referencia,
+        r.permanencia,
+        r.motivo_cierre,
+        r.id_usuario
+      FROM public.REGISTRO_PCD r
+      WHERE r.id_registro_discapacidad = $1;
+    `;
+    const result = await pool.query(query, [id_registro_discapacidad]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Registro no encontrado' });
+    }
+
+    // Retornar una respuesta con el registro encontrado
+    return res.json({
+      message: 'Registro obtenido exitosamente',
+      data: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error al obtener el registro:', error);
+    return res.status(500).json({ error: 'Error al obtener el registro' });
+  }
+};
 const getRegistrosByMunicipio = async (req, res) => {
   const { id_municipio } = req.params;
   try {
@@ -426,6 +476,7 @@ module.exports = {
     checkDatabaseConnection,
     createRegistroPcd,
     updateRegistroPcd,
+    getRegistroById,
     getRegistrosByMunicipio,
     createUsuario,
     loginUsuario,

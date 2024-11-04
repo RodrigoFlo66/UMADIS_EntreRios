@@ -1,5 +1,6 @@
 import { showConfirmModal } from './ModalConfirm.js';
 import { initializeTable } from './DataList.js';
+import { serverUrl } from '../server.config.js';
 // Crear el formulario y sus elementos con JavaScript
 const form = document.createElement('form');
 form.id = 'miForm';
@@ -298,13 +299,13 @@ clearButton.addEventListener('click', function() {
     showConfirmModal('¿No se guardaran los cambios realizados. ¿Estás seguro de que deseas continuar?', function() {
       form.reset(); // Limpia el formulario si el usuario confirma
       document.getElementById('dataList').style.display = 'block';
-      document.getElementById('searchInput').style.display = 'block';
       document.getElementById('filterData').style.display = 'block';
-      document.getElementById('showDataList').style.display = 'block';
+      //document.getElementById('showDataList').style.display = 'block';
       document.getElementById('showProductForm').style.display = 'block';
+      //document.getElementById('download-csv').style.display = 'block';
       document.getElementById('productForm').style.display = 'none';
       document.getElementById('editData').style.display = 'none';
-      
+    
     });
   });
 
@@ -329,9 +330,10 @@ formContainer.appendChild(form);
 saveButton.addEventListener('click', async function(e) {
     e.preventDefault(); // Prevenir el envío por defecto
     const formData = getFromData();
+    console.log(formData);
     // Enviar los datos con fetch a tu backend
     try{ 
-      const response = await fetch('https://server-umadis.onrender.com/registro', {
+      const response = await fetch(`${serverUrl}/registro-pcd/1`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -380,50 +382,30 @@ saveButton.addEventListener('click', async function(e) {
 });
 export function getFromData() {
   const formData = {
-    nombre_completo: document.getElementById('nombre_completo').value,
-    ci: getIntValue('ci'),
+    nombre_apellido: document.getElementById('nombre_apellido').value,
     fecha_nacimiento: document.getElementById('fecha_nacimiento').value === "" ? null : document.getElementById('fecha_nacimiento').value,
-    estado_civil: document.getElementById('estado_civil').value,
-    idioma_hablado: document.getElementById('idioma_hablado').value,
     edad: getIntValue('edad'),
-    genero: document.getElementById('genero').value,
-    nro_carnet_discapacidad: getIntValue('nro_carnet_discapacidad'),
-    fechaExp_carnet_discapacidad: document.getElementById('fechaExp_carnet_discapacidad').value === "" ? null : document.getElementById('fechaExp_carnet_discapacidad').value,
-    fechaVen_carnet_discapacidad: document.getElementById('fechaVen_carnet_discapacidad').value === "" ? null : document.getElementById('fechaVen_carnet_discapacidad').value,
-    direccion_domicilio: document.getElementById('direccion_domicilio').value,
-    otb_domicilio: document.getElementById('otb_domicilio').value,
-    distrito_domicilio: document.getElementById('distrito_domicilio').value,
-    domicilio_verificado: document.getElementById('domicilio_verificado').value,
-    lugar_origen: document.getElementById('lugar_origen').value,
-    celular: getIntValue('celular'),
-    fallecido: document.getElementById('fallecido').value,
+    sexo: document.getElementById('sexo').value,
+    nro_ci: getIntValue('nro_ci'),
+    estado_civil: document.getElementById('estado_civil').value,
+    idioma_pcd: document.getElementById('idioma_pcd').value,
     tipo_discapacidad: document.getElementById('tipo_discapacidad').value,
     grado_discapacidad: document.getElementById('grado_discapacidad').value,
-    causa_discapacidad: document.getElementById('causa_discapacidad').value,
-    beneficio_bono: document.getElementById('beneficio_bono').value,
-    independiente: document.getElementById('independiente').value,
-    familiar_acargo: document.getElementById('familiar_acargo').value,
-    afiliado_org: document.getElementById('afiliado_org').value,
-    nombre_org: document.getElementById('nombre_org').value,
-    apoyo_tecnico: document.getElementById('apoyo_tecnico').value,
-    nombre_apoyo: document.getElementById('nombre_apoyo').value,
-    tipo_medicamento: document.getElementById('tipo_medicamento').value,
-    rehabilitacion: document.getElementById('rehabilitacion').value,
-    nombre_rehabilitacion: document.getElementById('nombre_rehabilitacion').value,
-    nombre_seguro_salud: document.getElementById('nombre_seguro_salud').value,
-    intitucion_apoyo: document.getElementById('intitucion_apoyo').value,
-    grado_academico: document.getElementById('grado_academico').value,
-    nivel_academico: document.getElementById('nivel_academico').value,
-    estudia: document.getElementById('estudia').value,
-    situacion_vivienda: document.getElementById('situacion_vivienda').value,
-    generacion_ingresos: document.getElementById('generacion_ingresos').value,
-    ocupacion: document.getElementById('ocupacion').value,
-    trabaja: document.getElementById('trabaja').value,
-    insercion_laboral: document.getElementById('insercion_laboral').value,
-    fecha_registro: document.getElementById('fecha_registro').value === "" ? null : document.getElementById('fecha_registro').value,
-    motivo_consulta: document.getElementById('motivo_consulta').value,
-    situacion_actual: document.getElementById('situacion_actual').value,
-    especificar_causa: document.getElementById('especificar_causa').value
+    deficiencia: document.getElementById('deficiencia').value,
+    edad_inicio_discapacidad: getIntValue('edad_inicio_discapacidad'),
+    dispositivo_utiliza: document.getElementById('dispositivo_utiliza').value,
+    nivel_escolaridad: document.getElementById('nivel_escolaridad').value,
+    info_vivienda: document.getElementById('info_vivienda').value,
+    info_laboral: document.getElementById('info_laboral').value,
+    nombre_familiar: document.getElementById('nombre_familiar').value,
+    nro_hijos_pcd: getIntValue('nro_hijos_pcd'),
+    conyuge_pcd: document.getElementById('conyuge_pcd').value,
+    direc_domicilio: document.getElementById('direc_domicilio').value,
+    distrito_domicilio: document.getElementById('distrito_domicilio').value,
+    telefono_pdc: getIntValue('telefono_pcd'),
+    telefono_referencia: getIntValue('telefono_referencia'),
+    permanencia: document.getElementById('permanencia').value,
+    motivo_cierre: document.getElementById('motivo_cierre').value
 };
 return formData;
 }

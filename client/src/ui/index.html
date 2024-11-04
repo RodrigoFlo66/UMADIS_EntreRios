@@ -16,8 +16,11 @@
     <div id="dataList" style="width: 100%;">
       <!-- Aquí Tabulator mostrará la tabla -->
     </div>
+    <div id="message" class="col-12"></div>
+    <button id="download-csv" class = "button-container">Exportar CSV</button> 
     <div id="buttonContainer" class="button-container"></div>
     <div id="productForm"></div>
+    <div id="dataRegistro"></div>
   </main>
 
   <footer class="footer py-3">
@@ -37,11 +40,14 @@
   <!-- Carga el módulo DataList.js para configurar la tabla -->
   <script type="module" src="../components/DataList.js"></script>
   <script type="module" src="../components/dataForm.js"></script>
+  <script type="module" src="../components/dataRegistro.js"></script>
+  <script type="module" src="../components/updateData.js"></script>
 
   <script type="module"> 
     import { loadNav } from '../components/Nav.js'; 
     document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('productForm').style.display = 'none'; 
+      document.getElementById('dataRegistro').style.display = 'none';
       loadNav();
     });
   </script>

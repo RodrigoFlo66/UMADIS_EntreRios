@@ -1,6 +1,6 @@
-import { searchRecords} from './DataList.js';
 //import { showFilterModal, exportData } from './FilterModal.js';
 import { exportList } from './EstadistList.js';
+import {showUserModal} from "./modalUsuario.js";
 export function loadNav() {
   
   const navHtml = `
@@ -24,9 +24,12 @@ export function loadNav() {
           <a class="nav-link" href="#" id="editData">Editando Registro</a>
         </li>
       </ul>
-      <form class="form-inline ml-auto">
-        <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Buscar" id="searchInput">
-      </form>
+      <div class="ml-auto">
+          <a href="#" id="userIcon" class="btn btn-outline-secondary">
+              <i class="fas fa-user"></i> <!-- Ícono de usuario alineado a la derecha -->
+          </a>
+      </div>
+
     </div>
   </nav>
 `;
@@ -35,10 +38,12 @@ export function loadNav() {
   body.insertAdjacentHTML('afterbegin', navHtml);
   document.getElementById('editData').style.display = 'none';
   document.getElementById('exportData').style.display = 'none';
+  document.getElementById('filterData').style.display = 'none';
 
   document.getElementById('showProductForm').addEventListener('click', function() {
     document.getElementById('productForm').style.display = 'block';
     document.getElementById('dataList').style.display = 'none';
+    document.getElementById('download-csv').style.display = 'none';
     /*document.getElementById('exportData').style.display = 'none';
     document.getElementById('searchInput').style.display = 'none';
     document.getElementById('filterData').style.display = 'none';
@@ -54,22 +59,24 @@ export function loadNav() {
 
   document.getElementById('showDataList').addEventListener('click', function() {
     document.getElementById('dataList').style.display = 'block';
+    document.getElementById('download-csv').style.display = 'block';
     document.getElementById('productForm').style.display = 'none';
+    document.getElementById('dataRegistro').style.display = 'none';
     document.getElementById('exportData').style.display = 'none';
     //loadData(1, false);
   });
 
-  // Añadir evento de búsqueda
-  document.getElementById('searchInput').addEventListener('input', function() {
-    const query = this.value.toLowerCase();
-    searchRecords(query);
-  });
+  
   document.getElementById('filterData').addEventListener('click', function() {
     showFilterModal(); // Esta función mostrará el modal de filtrado
   });
   document.getElementById('exportData').addEventListener('click', function() {
     let data = exportData();
     exportList(data) // Esta función mostrará el modal de filtrado
+  });
+
+  document.getElementById('userIcon').addEventListener('click', function() {
+    showUserModal();
   });
 }
 
