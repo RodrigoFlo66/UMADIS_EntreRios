@@ -83,7 +83,7 @@ body {
   .button-container {
     position: fixed;
     right: 20px; /* Distancia desde el borde derecho de la pantalla */
-    top: 60px; /* Distancia desde el borde superior de la pantalla */
+    top: 70px; /* Distancia desde el borde superior de la pantalla */
     display: flex;
     flex-direction: column; /* Coloca los botones uno debajo del otro */
     gap: 8px; /* Espacio entre los botones */
@@ -153,7 +153,7 @@ footer .container img {
   height: auto;
 }
 footer .container img.logo-punata {
-  max-width: 50px; /* Ajusta según sea necesario */
+  max-width: 70px; /* Ajusta según sea necesario */
   height: auto;
 }
 footer .container .logo-left {
@@ -171,7 +171,7 @@ footer .container .logo-right {
 }
 
 #dataList .tabulator-row:hover {
-  background-color: #f7e0e0; /* Cambia el fondo cuando pasas el cursor */
+  background-color: #bdc8e6; /* Cambia el fondo cuando pasas el cursor */
 }
 
 #confirmModal {
@@ -182,3 +182,12 @@ footer .container .logo-right {
 .modal-backdrop.confirm-backdrop {
   z-index: 1059 !important;
 }
+
+#navbarNav {
+  flex-grow: 1;
+}
+
+.ms-auto {
+  margin-left: auto !important;
+}
+

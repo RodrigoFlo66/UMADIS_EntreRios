@@ -1,6 +1,8 @@
 
 const { createWindow } = require("./main");
 const { app, Menu } = require("electron");
+const path = require('path');
+const { startServer } = require('../server/src/index.js'); // Importa el servidor Express
 
 require('electron-reload')(__dirname);
 
@@ -57,16 +59,22 @@ const menu = Menu.buildFromTemplate(menuTemplate);
 // Establece el menú en la aplicación
 Menu.setApplicationMenu(menu);
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+    startServer(); // Inicia el servidor Express
+    createWindow(); // Crea la ventana de Electron
+
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+});
 
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+    if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
+        startServer();
         createWindow();
     }
 });

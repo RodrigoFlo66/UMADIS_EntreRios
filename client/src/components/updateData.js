@@ -9,6 +9,7 @@ export async function  updateRegistro(id_registro_discapacidad) {
     document.getElementById('dataList').style.display = 'none';
     document.getElementById('dataRegistro').style.display = 'none';
     document.getElementById('showProductForm').style.display = 'none';
+    document.getElementById('showDataList').style.display = 'none';
     
      // Realizar la solicitud para obtener los datos del registro
      const response = await fetch(`${serverUrl}/registro-pcd/${id_registro_discapacidad}`);
@@ -74,6 +75,42 @@ export async function  updateRegistro(id_registro_discapacidad) {
         const formData = getFromData();
         console.log(formData);
         try {
+            // Verificar campos obligatorios
+            const requiredFields = document.querySelectorAll('input[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid'); // Marca el campo como inválido
+                    // Agrega el mensaje de error si no existe
+                    let error = field.parentElement.querySelector('.error-message');
+                    if (!error) {
+                        error = document.createElement('div');
+                        error.className = 'error-message text-danger';
+                        error.textContent = 'Este campo es obligatorio.';
+                        field.parentElement.appendChild(error);
+                    }
+                } else {
+                    field.classList.remove('is-invalid'); // Quita el estilo de error si se llena
+                    const error = field.parentElement.querySelector('.error-message');
+                    if (error) {
+                        field.parentElement.removeChild(error);
+                    }
+                }
+            });
+
+            if (!isValid) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = 'Por favor, llena todos los campos obligatorios.';
+                messageDiv.className = 'alert alert-danger';
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.textContent = '';
+                    messageDiv.className = '';
+                }, 3000);
+                return; // Detener el envío si hay campos vacíos
+            }
             // Realiza la solicitud PUT para actualizar el registro
             const response = await fetch(`${serverUrl}/registro-pcd/${id_registro_discapacidad}`, {
                 method: 'PUT',
@@ -86,10 +123,11 @@ export async function  updateRegistro(id_registro_discapacidad) {
             if (response.ok) {
             resetForm();
             document.getElementById('dataList').style.display = 'block';
-            //document.getElementById('showDataList').style.display = 'block';
+            document.getElementById('showDataList').style.display = 'block';
             document.getElementById('showProductForm').style.display = 'block';
             document.getElementById('productForm').style.display = 'none';
             document.getElementById('editData').style.display = 'none';
+            document.getElementById('filterData').style.display = 'none';
             initializeTable();
                 // Muestra un mensaje de éxito
             

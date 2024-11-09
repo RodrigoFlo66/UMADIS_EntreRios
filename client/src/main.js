@@ -10,7 +10,10 @@ function createWindow() {
       },
     });
     window.loadFile("src/ui/index.html");
+    window.maximize();
+    //window.loadURL('http://localhost:8080');
 }
+
 module.exports = {
     createWindow,
 }

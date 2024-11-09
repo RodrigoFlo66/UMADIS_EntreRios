@@ -5,7 +5,7 @@ export function loadNav() {
   
   const navHtml = `
   <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top" id="navApp">
-    <a class="navbar-brand" href="#" id="showDataList"><i class="fas fa-home"></i> INICIO</a>
+    <a class="navbar-brand ms-3" href="#" id="showDataList"><i class="fas fa-home"></i> INICIO</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -24,12 +24,12 @@ export function loadNav() {
           <a class="nav-link" href="#" id="editData">Editando Registro</a>
         </li>
       </ul>
-      <div class="ml-auto">
+      <!-- Contenedor del ícono de usuario, alineado a la derecha -->
+      <div class="ms-auto me-3">
           <a href="#" id="userIcon" class="btn btn-outline-secondary">
-              <i class="fas fa-user"></i> <!-- Ícono de usuario alineado a la derecha -->
+              <i class="fas fa-user"></i>
           </a>
       </div>
-
     </div>
   </nav>
 `;
@@ -48,6 +48,7 @@ export function loadNav() {
     document.getElementById('searchInput').style.display = 'none';
     document.getElementById('filterData').style.display = 'none';
     document.getElementById('showDataList').style.display = 'none';*/
+    document.getElementById('showDataList').style.display = 'none';
     const existingButton = document.getElementById('editButtonId'); 
     const saveButton = document.getElementById('saveButton');
 
@@ -59,6 +60,7 @@ export function loadNav() {
 
   document.getElementById('showDataList').addEventListener('click', function() {
     document.getElementById('dataList').style.display = 'block';
+    document.getElementById('showProductForm').style.display = 'block';
     document.getElementById('download-csv').style.display = 'block';
     document.getElementById('productForm').style.display = 'none';
     document.getElementById('dataRegistro').style.display = 'none';

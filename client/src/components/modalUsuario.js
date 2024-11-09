@@ -4,49 +4,46 @@ import { showConfirmModal } from './ModalConfirm.js';
 export async function showUserModal() {
     
     const modalHtml = `
-        <!-- Modal -->
-        <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="userModalLabel">Administración de Usuarios</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+    <!-- Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">Administración de Usuarios</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container" id="user-list">
+                        <!-- Los usuarios se cargarán aquí dinámicamente -->
                     </div>
-                    <div class="modal-body">
-                        <div class="container" id="user-list">
-                            <!-- Los usuarios se cargarán aquí dinámicamente -->
-                        </div>
-                        <button class="btn btn-success mt-3" id="add-user-btn">Añadir Usuario</button>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    </div>
+                    <button class="btn btn-success mt-3" id="add-user-btn">Añadir Usuario</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
-    `;
-    
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    const userContainer = document.querySelector('#user-list');
-    const addButton = document.getElementById('add-user-btn');
-    async function loadUsers() {
-        const response = await fetch(`${serverUrl}/usuarios/${id_municipio}`);
-        const usersData = await response.json();
-        const users = usersData.data;
-    
-        userContainer.innerHTML = '';  // Limpia el contenedor antes de agregar los usuarios
-    
-        users.forEach(user => {
-            createUserRow(user, userContainer);  // Crea una fila para cada usuario
-        });
-    }
-        // Limpia el contenedor cada vez que se abre el modal
-        $('#userModal').on('shown.bs.modal', function () {
-            loadUsers();
-            addButton.disabled = false;    // Asegura que el botón esté habilitado
-        });
+    </div>
+`;
+
+document.body.insertAdjacentHTML('beforeend', modalHtml);
+const userContainer = document.querySelector('#user-list');
+const addButton = document.getElementById('add-user-btn');
+
+// Inicializa el modal con las opciones 'backdrop' y 'keyboard'
+$('#userModal').modal({
+    backdrop: 'static',  // Evita cerrar el modal al hacer clic fuera de él
+    keyboard: false      // Evita cerrar el modal al presionar la tecla Esc
+});
+
+// Añade el evento para limpiar el contenedor cada vez que se abre el modal
+$('#userModal').on('shown.bs.modal', function () {
+    loadUsers();             // Carga los usuarios
+    addButton.disabled = false;  // Asegura que el botón esté habilitado
+});
+
     // Registra el evento `click` para añadir usuario solo una vez al cargar la página
     addButton.addEventListener('click', () => addUserRow(userContainer));
 
@@ -65,12 +62,14 @@ function addUserRow(container) {
         <div class="col-sm-6 col-12 mb-3">
             <label>Nombre de Usuario:</label>
             <input type="text" class="form-control" id="username-${newUserId}" required>
+            <div class="invalid-feedback">El nombre de usuario es obligatorio.</div> <!-- Mensaje de error -->
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 mb-3">
             <label>Contraseña:</label>
             <input type="password" class="form-control" id="password-${newUserId}" required>
+            <div class="invalid-feedback">La contraseña es obligatoria.</div> <!-- Mensaje de error -->
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 mb-3">
             <label>Nivel de Usuario:</label>
             <select class="form-control" id="user-level-${newUserId}">
                 <option value="ADMINISTRADOR">ADMINISTRADOR</option>
@@ -85,12 +84,11 @@ function addUserRow(container) {
     container.innerHTML = '';  // Limpia el contenedor antes de agregar la nueva fila
     container.appendChild(newRow);
 
-    document.getElementById(`save-btn-${newUserId}`).addEventListener('click', () => {
-        saveNewUser(newUserId);
-        newRow.remove(); // Elimina la fila temporal
+    document.getElementById(`save-btn-${newUserId}`).addEventListener('click', async () => {
         const addButton = document.getElementById('add-user-btn');
-    addButton.disabled = false;  // Habilita el botón de añadir
-        $('#userModal').modal('hide');
+        addButton.disabled = false;  // Habilita el botón de añadir
+        saveNewUser(newUserId);
+        newRow.remove();  // Elimina la fila temporal    
     });
     document.getElementById(`cancel-btn-${newUserId}`).addEventListener('click', () => {
         const addButton = document.getElementById('add-user-btn');
@@ -102,7 +100,18 @@ function addUserRow(container) {
 
     $('#userModal').modal('show');
 }
+async function loadUsers() {
+    const userContainer = document.querySelector('#user-list');
+    const response = await fetch(`${serverUrl}/usuarios/${id_municipio}`);
+    const usersData = await response.json();
+    const users = usersData.data;
 
+    userContainer.innerHTML = '';  // Limpia el contenedor antes de agregar los usuarios
+
+    users.forEach(user => {
+        createUserRow(user, userContainer);  // Crea una fila para cada usuario
+    });
+}
 // Función para crear una fila de usuario con los datos proporcionados
 function createUserRow(user, container) {
     const userRow = document.createElement('div');
@@ -113,11 +122,13 @@ function createUserRow(user, container) {
         <div class="row user-item mb-3">
     <div class="col-sm-6 col-12 mb-3">
         <label>Nombre de Usuario:</label>
-        <input type="text" class="form-control" value="${user.nombre_usuario}" disabled id="username-${user.id_usuario}">
+        <input type="text" class="form-control" value="${user.nombre_usuario}" disabled id="username-${user.id_usuario}" required>
+        <div class="invalid-feedback">El nombre de usuario es obligatorio.</div> <!-- Mensaje de error -->
     </div>
     <div class="col-sm-6 col-12 mb-3">
         <label>Contraseña:</label>
-        <input type="password" class="form-control" value="${user.pasword}" disabled id="password-${user.id_usuario}">
+        <input type="password" class="form-control" value="${user.pasword}" disabled id="password-${user.id_usuario}" required>
+        <div class="invalid-feedback">La contraseña es obligatoria.</div> <!-- Mensaje de error -->
     </div>
     <div class="col-sm-6 col-12 mb-3">
         <label>Nivel de Usuario:</label>
@@ -131,7 +142,6 @@ function createUserRow(user, container) {
         <button class="btn btn-danger" id="delete-btn-${user.id_usuario}">Eliminar</button>
     </div>
 </div>
-
     `;
 
     container.appendChild(userRow);
@@ -155,9 +165,30 @@ async function saveNewUser(newUserId) {
     
     const username = document.getElementById(`username-${newUserId}`).value;
     const password = document.getElementById(`password-${newUserId}`).value;
+    const usernameContainer = document.getElementById(`username-${newUserId}`);
+    const passwordContainer = document.getElementById(`password-${newUserId}`);
     const userLevel = document.getElementById(`user-level-${newUserId}`).value;
+    let isValid = true;
 
-    const newUser = { nombre_usuario: username, pasword: password, nivel_usuario: userLevel };
+    // Validar Nombre de Usuario
+    if (!usernameContainer.value.trim()) {
+        usernameContainer.classList.add('is-invalid'); // Agregar clase de error de Bootstrap
+        isValid = false;
+    } else {
+        usernameContainer.classList.remove('is-invalid'); // Remover clase de error si está lleno
+    }
+
+    // Validar Contraseña
+    if (!passwordContainer.value.trim()) {
+        passwordContainer.classList.add('is-invalid'); // Agregar clase de error de Bootstrap
+        isValid = false;
+    } else {
+        passwordContainer.classList.remove('is-invalid'); // Remover clase de error si está lleno
+    }
+
+    // Si todos los campos son válidos, se puede continuar con el envío de datos
+    if (isValid) {
+        const newUser = { nombre_usuario: username, pasword: password, nivel_usuario: userLevel };
 
     // Envía los datos al servidor
     const response = await fetch(`${serverUrl}/usuario/${id_municipio}`, {
@@ -177,10 +208,28 @@ async function saveNewUser(newUserId) {
       }, 3000);
         const createdUser = await response.json();
         const userContainer = document.querySelector('#user-list');
+        const addButton = document.getElementById('add-user-btn');
+        addButton.disabled = false;  // Habilita el botón de añadir
         //document.getElementById(`user-${newUserId}`).remove();  // Elimina la fila temporal
+        //$('#userModal').modal('hide');
+        loadUsers();
     } else {
         const messageDiv = document.getElementById('message');
       messageDiv.textContent = 'Error al añadir el usuario.';
+      messageDiv.className = 'alert alert-danger';
+      messageDiv.style.display = 'block';
+      setTimeout(() => {
+        messageDiv.textContent = '';
+        messageDiv.className = '';
+      }, 3000);
+      const addButton = document.getElementById('add-user-btn');
+        addButton.disabled = false;  // Habilita el botón de añadir
+        document.getElementById(`user-${newUserId}`).remove();  // Elimina la fila temporal
+      $('#userModal').modal('hide');
+    }
+    } else {
+        const messageDiv = document.getElementById('message');
+      messageDiv.textContent = 'Por favor llene todos los campos obligatorios.';
       messageDiv.className = 'alert alert-danger';
       messageDiv.style.display = 'block';
       setTimeout(() => {
@@ -211,16 +260,29 @@ function editUsuario(id_usuario) {
     const usernameField = document.getElementById(`username-${id_usuario}`);
     const passwordField = document.getElementById(`password-${id_usuario}`);
     const userLevelField = document.getElementById(`user-level-${id_usuario}`);
-    
 
-    const isEditing = !usernameField.disabled;
-    
-    // Alternar habilitación de los campos
-    usernameField.disabled = isEditing;
-    passwordField.disabled = isEditing;
-    userLevelField.disabled = isEditing;
-        // Si está guardando, recoger los datos actualizados
-        const updatedData = {
+    let isValid = true;
+
+    // Validar Nombre de Usuario
+    if (!usernameField.value.trim()) {
+        usernameField.classList.add('is-invalid'); // Agregar clase de error de Bootstrap
+        isValid = false;
+    } else {
+        usernameField.classList.remove('is-invalid'); // Remover clase de error si está lleno
+    }
+
+    // Validar Contraseña
+    if (!passwordField.value.trim()) {
+        passwordField.classList.add('is-invalid'); // Agregar clase de error de Bootstrap
+        isValid = false;
+    } else {
+        passwordField.classList.remove('is-invalid'); // Remover clase de error si está lleno
+    }
+
+    // Si todos los campos son válidos, proceder con la lógica de guardado
+    if (isValid) {
+         // Si está guardando, recoger los datos actualizados
+         const updatedData = {
             nombre_usuario: usernameField.value,
             pasword: passwordField.value,
             nivel_usuario: userLevelField.value
@@ -240,11 +302,12 @@ function editUsuario(id_usuario) {
             messageDiv.textContent = 'Datos de usuario editado correctamente.';
             messageDiv.className = 'alert alert-success';
             messageDiv.style.display = 'block';
-            $('#userModal').modal('hide');
+            //$('#userModal').modal('hide');
             setTimeout(() => {
               messageDiv.textContent = '';
               messageDiv.className = '';
             }, 3000);
+            loadUsers();
           })
           .catch(error => {
               // Mostrar mensaje de error
@@ -257,6 +320,17 @@ function editUsuario(id_usuario) {
                 messageDiv.className = '';
               }, 3000);
           });
+    } else {
+        const messageDiv = document.getElementById('message');
+      messageDiv.textContent = 'Por favor llene todos los campos obligatorios.';
+      messageDiv.className = 'alert alert-danger';
+      messageDiv.style.display = 'block';
+      setTimeout(() => {
+        messageDiv.textContent = '';
+        messageDiv.className = '';
+      }, 3000);
+    }
+       
 }
 
 async function deleteUser(id_usuario) {
@@ -273,11 +347,12 @@ async function deleteUser(id_usuario) {
           messageDiv.style.display = 'block';
           console.log(id_usuario);
           //document.getElementById(`user-${id_usuario}`).remove(); //elimina la fila del usuario
-          $('#userModal').modal('hide');
+         // $('#userModal').modal('hide');
           setTimeout(() => {
             messageDiv.textContent = '';
             messageDiv.className = '';
           }, 3000);
+          loadUsers();
         })
         .catch(error => {
             // Mostrar mensaje de error

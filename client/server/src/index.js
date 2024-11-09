@@ -12,6 +12,11 @@ app.use(express.json());
 
 app.use(storeRoutes);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`); 
-})
+// Encapsula el inicio del servidor en una función
+function startServer() {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  }
+  
+  module.exports = { startServer };

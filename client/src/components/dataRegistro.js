@@ -2,11 +2,10 @@ import { serverUrl } from '../server.config.js';
 import { updateRegistro } from './updateData.js';
 
 export async function mostrarPerfil(id_registro_discapacidad) {
-    // Obtén el contenedor del perfil en el HTML principal
+    document.getElementById('showProductForm').style.display = 'none';
     const container = document.getElementById("dataRegistro");
     container.innerHTML = ""; // Limpia el contenido anterior
 
-    // Realiza la solicitud fetch para obtener los datos
     const response = await fetch(`${serverUrl}/registro-pcd/${id_registro_discapacidad}`);
     const dataRegistro = await response.json();
     const data = dataRegistro.data;
@@ -19,110 +18,110 @@ export async function mostrarPerfil(id_registro_discapacidad) {
             margin: 20px auto;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra de contenedor */
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            background-color: #f9f9f9; /* Fondo del contenedor del perfil */
         }
-        .profile-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
+
+        /* Tabla de perfil */
+        .profile-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
         }
-        .profile-buttons button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
+
+        
+        .profile-table th, .profile-table td {
+    padding: 10px 15px;
+    border: 1px solid #ddd; /* Bordes de las celdas */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.03); /* Sombra interna */
+}
+
+        /* Encabezado de la tabla */
+        .profile-table th {
+            width: 30%; /* Ancho de la columna de nombres */
+            background-color: var(--bs-primary); /* Fondo del encabezado usando la variable CSS de Bootstrap */
+            color: white; /* Color del texto del encabezado */
             font-weight: bold;
-            transition: background-color 0.3s;
+            text-align: left;
         }
-        .profile-buttons button:hover {
-            background-color: #0056b3;
+
+        /* Celdas de la tabla */
+        .profile-table td {
+        width: 70%; /* Ancho de la columna de valores */
+            background-color: #f9f9f9; /* Fondo de las celdas */
+            color: #333; /* Color del texto de las celdas */
         }
-        .profile-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            column-gap: 20px;
-            row-gap: 10px;
-            color: #333;
-        }
-        .profile-info h2 {
-            grid-column: span 2;
-            font-size: 24px;
-            color: #007bff;
-            text-align: center;
-        }
-        .profile-info p {
-            margin: 5px 0;
-        }
-        .profile-info strong {
-            display: inline-block;
-            width: 160px;
-            font-weight: bold;
-            color: #555;
-        }
+
+        
+
     `;
     document.head.appendChild(style);
 
-    // Botones en la parte superior
+    // Botones de acciones
     const buttonsContainer = document.createElement("div");
     buttonsContainer.className = "profile-buttons";
-
-    const createButton = (text, onClick) => {
-        const button = document.createElement("button");
-        button.textContent = text;
-        button.addEventListener("click", onClick);
-        return button;
-    };
-
-    buttonsContainer.appendChild(createButton("Editar Registro", () => editarRegistro(id_registro_discapacidad)));
-    buttonsContainer.appendChild(createButton("Ver Historial", () => verHistorial(id_registro_discapacidad)));
-    buttonsContainer.appendChild(createButton("Registro de Atención", () => registrarAtencion(id_registro_discapacidad)));
+    buttonsContainer.appendChild(createButton("Editar Registro", () => editarRegistro(id_registro_discapacidad), 'btn btn-success me-2'));
+    buttonsContainer.appendChild(createButton("Ver Historial", () => verHistorial(id_registro_discapacidad), 'btn btn-secondary me-2'));
+    buttonsContainer.appendChild(createButton("Registro de Atención", () => registrarAtencion(id_registro_discapacidad), 'btn btn-warning'));
     container.appendChild(buttonsContainer);
 
-    // Información del perfil
-    const profileInfo = document.createElement("div");
-    profileInfo.className = "profile-info";
-    profileInfo.innerHTML = `
-        <h2>Perfil de ${data.nombre_apellido}</h2>
-        <p><strong>Fecha de Nacimiento:</strong> ${data.fecha_nacimiento}</p>
-        <p><strong>Edad:</strong> ${data.edad}</p>
-        <p><strong>Sexo:</strong> ${data.sexo}</p>
-        <p><strong>Nro CI:</strong> ${data.nro_ci}</p>
-        <p><strong>Estado Civil:</strong> ${data.estado_civil}</p>
-        <p><strong>Idioma PCD:</strong> ${data.idioma_pcd}</p>
-        <p><strong>Tipo de Discapacidad:</strong> ${data.tipo_discapacidad}</p>
-        <p><strong>Grado de Discapacidad:</strong> ${data.grado_discapacidad}</p>
-        <p><strong>Deficiencia:</strong> ${data.deficiencia}</p>
-        <p><strong>Edad de Inicio de la Discapacidad:</strong> ${data.edad_inicio_discapacidad}</p>
-        <p><strong>Dispositivo que Utiliza:</strong> ${data.dispositivo_utiliza}</p>
-        <p><strong>Nivel de Escolaridad:</strong> ${data.nivel_escolaridad}</p>
-        <p><strong>Información de Vivienda:</strong> ${data.info_vivienda}</p>
-        <p><strong>Información Laboral:</strong> ${data.info_laboral}</p>
-        <p><strong>Nombre del Familiar:</strong> ${data.nombre_familiar}</p>
-        <p><strong>Número de Hijos PCD:</strong> ${data.nro_hijos_pcd}</p>
-        <p><strong>Conyuge PCD:</strong> ${data.conyuge_pcd}</p>
-        <p><strong>Dirección de Domicilio:</strong> ${data.direc_domicilio}</p>
-        <p><strong>Distrito de Domicilio:</strong> ${data.distrito_domicilio}</p>
-        <p><strong>Teléfono PCD:</strong> ${data.telefono_pdc}</p>
-        <p><strong>Teléfono de Referencia:</strong> ${data.telefono_referencia}</p>
-        <p><strong>Permanencia:</strong> ${data.permanencia}</p>
-        <p><strong>Motivo de Cierre:</strong> ${data.motivo_cierre}</p>
+    // Título de perfil
+    const profileTitle = document.createElement("h2");
+    profileTitle.textContent = `DATOS DE ${data.nombre_apellido}`;
+    profileTitle.className = "text-center text-primary mb-4";
+    container.appendChild(profileTitle);
+
+    // Información de perfil en formato de tabla
+    const profileTable = document.createElement("table");
+    profileTable.className = "profile-table";
+    profileTable.innerHTML = `
+        <tr>
+        <th>Fecha de Nacimiento:</th>
+        <td>${data.fecha_nacimiento ? data.fecha_nacimiento.split('T')[0] : 'null'}</td>
+        </tr>
+        <tr><th>Edad:</th><td>${data.edad}</td></tr>
+        <tr><th>Sexo:</th><td>${data.sexo}</td></tr>
+        <tr><th>Numero de CI:</th><td>${data.nro_ci}</td></tr>
+        <tr><th>Estado Civil:</th><td>${data.estado_civil}</td></tr>
+        <tr><th>Idioma hablado:</th><td>${data.idioma_pcd}</td></tr>
+        <tr><th>Tipo de Discapacidad:</th><td>${data.tipo_discapacidad}</td></tr>
+        <tr><th>Grado de Discapacidad:</th><td>${data.grado_discapacidad}</td></tr>
+        <tr><th>Deficiencia:</th><td>${data.deficiencia}</td></tr>
+        <tr><th>Edad de Inicio de la Discapacidad:</th><td>${data.edad_inicio_discapacidad}</td></tr>
+        <tr><th>Dispositivo que Utiliza:</th><td>${data.dispositivo_utiliza}</td></tr>
+        <tr><th>Nivel de Escolaridad:</th><td>${data.nivel_escolaridad}</td></tr>
+        <tr><th>Información de Vivienda:</th><td>${data.info_vivienda}</td></tr>
+        <tr><th>Información Laboral:</th><td>${data.info_laboral}</td></tr>
+        <tr><th>Nombre del Familiar:</th><td>${data.nombre_familiar}</td></tr>
+        <tr><th>Número de Hijos:</th><td>${data.nro_hijos_pcd}</td></tr>
+        <tr><th>Conyuge:</th><td>${data.conyuge_pcd}</td></tr>
+        <tr><th>Dirección de Domicilio:</th><td>${data.direc_domicilio}</td></tr>
+        <tr><th>Distrito de Domicilio:</th><td>${data.distrito_domicilio}</td></tr>
+        <tr><th>Teléfono/Celular:</th><td>${data.telefono_pdc}</td></tr>
+        <tr><th>Teléfono de Referencia:</th><td>${data.telefono_referencia}</td></tr>
+        <tr><th>Permanencia:</th><td>${data.permanencia}</td></tr>
+        <tr><th>Motivo de Cierre:</th><td>${data.motivo_cierre}</td></tr>
     `;
-    container.appendChild(profileInfo);
+    container.appendChild(profileTable);
 }
 
-// Funciones de ejemplo para los botones de acción
+// Función auxiliar para crear botones de acción
+function createButton(text, onClick, className) {
+    const button = document.createElement("button");
+    button.textContent = text;
+    button.className = className;
+    button.addEventListener("click", onClick);
+    return button;
+}
+
+// Ejemplos de funciones para botones de acción
 function editarRegistro(id_registro_discapacidad) {
     updateRegistro(id_registro_discapacidad);
 }
-
 function verHistorial(id) {
     alert(`Ver historial de ID ${id}`);
 }
-
 function registrarAtencion(id) {
     alert(`Registrar atención para ID ${id}`);
 }

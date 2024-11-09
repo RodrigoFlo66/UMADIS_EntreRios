@@ -164,7 +164,7 @@ export function createSelectMultipleWithLabel(id, options, label, required) {
 //DATOS PERSONALES//
 const nombreCompleto = createInputWithLabel('nombre_apellido', 'text', "", "Nombres y Apellidos", true);
 leftHalf.appendChild(nombreCompleto);
-const fechaNacimientoInput = createInputWithLabel('fecha_nacimiento', 'date', "", "Fecha de Nacimiento", false);
+const fechaNacimientoInput = createInputWithLabel('fecha_nacimiento', 'date', "", "Fecha de Nacimiento", true);
 leftHalf.appendChild(fechaNacimientoInput);
 const edadInput = createInputWithLabel('edad', 'number', "", "Edad", false);
 leftHalf.appendChild(edadInput);
@@ -174,7 +174,7 @@ const generoSelectWithLabel = createSelectWithLabel('sexo', [
     { value: 'MUJER', text: 'MUJER' }
   ], 'Sexo', false);
   leftHalf.appendChild(generoSelectWithLabel);
-const ciInput = createInputWithLabel('nro_ci', 'number', "", "Numero de CI", false);
+const ciInput = createInputWithLabel('nro_ci', 'number', "", "Numero de CI", true);
 leftHalf.appendChild(ciInput);
 const estadoCivilSelectWithLabel = createSelectWithLabel('estado_civil', [
   { value: '', text: 'Seleccione una opción' },
@@ -184,9 +184,9 @@ const estadoCivilSelectWithLabel = createSelectWithLabel('estado_civil', [
   { value: 'VIUDO(A)', text: 'VIUDO(A)' },
   { value: 'CONCUBINATO', text: 'CONCUBINATO' },
   { value: 'SEPARADO', text: 'SEPARADO' }
-], 'Estado Civil', false);
+], 'Estado Civil', true);
 leftHalf.appendChild(estadoCivilSelectWithLabel);
-const idiomaHablado = createInputWithLabel('idioma_pcd', 'text', "", "Idioma", true);
+const idiomaHablado = createInputWithLabel('idioma_pcd', 'text', "", "Idioma", false);
 leftHalf.appendChild(idiomaHablado);
 //DATOS DE DISCAPACIDAD//
 const tipoDiscapacidad = createSelectWithLabel('tipo_discapacidad', [
@@ -243,9 +243,9 @@ const nivelEscolaridad = createSelectWithLabel('nivel_escolaridad', [
 //DATOS FAMILIARES//
 const nombreFamiliar = createInputWithLabel('nombre_familiar', 'text', "", "Nombre de familiar", false);
   rightHalf.appendChild(nombreFamiliar);
-  const numHijos = createInputWithLabel('nro_hijos_pcd', 'number', "", "Numero de hijos de PCD", false);
+  const numHijos = createInputWithLabel('nro_hijos_pcd', 'number', "", "Numero de hijos de PcD", false);
   rightHalf.appendChild(numHijos);
-  const conyuge = createInputWithLabel('conyuge_pcd', 'text', "", "Conyuge de PCD", false);
+  const conyuge = createInputWithLabel('conyuge_pcd', 'text', "", "Conyuge de PcD", false);
   rightHalf.appendChild(conyuge);
   //DATOS DE CONTACTO//
   const direccion = createInputWithLabel('direc_domicilio', 'text', "", "Direccion de domicilio", false);
@@ -299,8 +299,7 @@ clearButton.addEventListener('click', function() {
     showConfirmModal('¿No se guardaran los cambios realizados. ¿Estás seguro de que deseas continuar?', function() {
       form.reset(); // Limpia el formulario si el usuario confirma
       document.getElementById('dataList').style.display = 'block';
-      document.getElementById('filterData').style.display = 'block';
-      //document.getElementById('showDataList').style.display = 'block';
+      document.getElementById('showDataList').style.display = 'block';
       document.getElementById('showProductForm').style.display = 'block';
       //document.getElementById('download-csv').style.display = 'block';
       document.getElementById('productForm').style.display = 'none';
@@ -324,11 +323,52 @@ clearButton.addEventListener('click', function() {
 form.appendChild(buttonContainer);
 // Seleccionar el contenedor del formulario
 const formContainer = document.getElementById('productForm');
-
+// Título de perfil
+const profileTitle = document.createElement("h2");
+profileTitle.textContent = `FORMULARIO DE REGISTRO DE PERSONAS CON DISCAPACIDAD`;
+profileTitle.className = "text-center text-primary mb-4";
+formContainer.appendChild(profileTitle);
 formContainer.appendChild(form);
 // Manejar el evento de envío del formulario
 saveButton.addEventListener('click', async function(e) {
     e.preventDefault(); // Prevenir el envío por defecto
+    // Verificar campos obligatorios
+    const requiredFields = document.querySelectorAll('input[required]');
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            isValid = false;
+            field.classList.add('is-invalid'); // Marca el campo como inválido
+            // Agrega el mensaje de error si no existe
+            let error = field.parentElement.querySelector('.error-message');
+            if (!error) {
+                error = document.createElement('div');
+                error.className = 'error-message text-danger';
+                error.textContent = 'Este campo es obligatorio.';
+                field.parentElement.appendChild(error);
+            }
+        } else {
+            field.classList.remove('is-invalid'); // Quita el estilo de error si se llena
+            const error = field.parentElement.querySelector('.error-message');
+            if (error) {
+                field.parentElement.removeChild(error);
+            }
+        }
+    });
+
+    if (!isValid) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = 'Por favor, llena todos los campos obligatorios.';
+        messageDiv.className = 'alert alert-danger';
+        messageDiv.style.display = 'block';
+        setTimeout(() => {
+            messageDiv.textContent = '';
+            messageDiv.className = '';
+        }, 3000);
+        return; // Detener el envío si hay campos vacíos
+    }
+
     const formData = getFromData();
     console.log(formData);
     // Enviar los datos con fetch a tu backend
@@ -350,6 +390,7 @@ saveButton.addEventListener('click', async function(e) {
        document.getElementById('showProductForm').style.display = 'block';
        document.getElementById('productForm').style.display = 'none';
        document.getElementById('editData').style.display = 'none';*/
+       document.getElementById('showDataList').style.display = 'block';
        initializeTable();
        const messageDiv = document.getElementById('message');
       messageDiv.textContent = 'Registro completado con éxito.';
