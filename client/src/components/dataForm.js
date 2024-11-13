@@ -166,8 +166,6 @@ const nombreCompleto = createInputWithLabel('nombre_apellido', 'text', "", "Nomb
 leftHalf.appendChild(nombreCompleto);
 const fechaNacimientoInput = createInputWithLabel('fecha_nacimiento', 'date', "", "Fecha de Nacimiento", true);
 leftHalf.appendChild(fechaNacimientoInput);
-const edadInput = createInputWithLabel('edad', 'number', "", "Edad", false);
-leftHalf.appendChild(edadInput);
 const generoSelectWithLabel = createSelectWithLabel('sexo', [
     { value: '', text: 'Seleccione una opción' },
     { value: 'VARON', text: 'VARON' },
@@ -225,7 +223,7 @@ const nivelEscolaridad = createSelectWithLabel('nivel_escolaridad', [
       { value: 'TECNICO', text: 'TECNICO' },
       { value: 'UNIVERSITARIO', text: 'UNIVERSITARIO' }
   ], 'Nivel de escolaridad', false);
-  rightHalf.appendChild(nivelEscolaridad);
+  leftHalf.appendChild(nivelEscolaridad);
   const infoVivienda = createSelectWithLabel('info_vivienda', [
     { value: '', text: 'Seleccione una opción' },
       { value: 'NO TIENE VIVIENDA PROPIA', text: 'NO TIENE VIVIENDA PROPIA' },
@@ -257,7 +255,7 @@ const nombreFamiliar = createInputWithLabel('nombre_familiar', 'text', "", "Nomb
     { value: 'ENTRE RIOS', text: 'ENTRE RIOS' },
     { value: 'MANCO KAPAC', text: 'MANCO KAPAC' },
     { value: 'ISARZAMA', text: 'ISARZAMA' }
-  ], '¿Domicilio Verificado?', false);
+  ], 'Distrito', false);
   rightHalf.appendChild(distritoDomicilio);
   const numCelular = createInputWithLabel('telefono_pcd', 'number', "", "Numero de Celular", false);
   rightHalf.appendChild(numCelular);
@@ -333,7 +331,7 @@ formContainer.appendChild(form);
 saveButton.addEventListener('click', async function(e) {
     e.preventDefault(); // Prevenir el envío por defecto
     // Verificar campos obligatorios
-    const requiredFields = document.querySelectorAll('input[required]');
+    const requiredFields = form.querySelectorAll('input[required]');
     let isValid = true;
 
     requiredFields.forEach(field => {
@@ -425,7 +423,6 @@ export function getFromData() {
   const formData = {
     nombre_apellido: document.getElementById('nombre_apellido').value,
     fecha_nacimiento: document.getElementById('fecha_nacimiento').value === "" ? null : document.getElementById('fecha_nacimiento').value,
-    edad: getIntValue('edad'),
     sexo: document.getElementById('sexo').value,
     nro_ci: getIntValue('nro_ci'),
     estado_civil: document.getElementById('estado_civil').value,

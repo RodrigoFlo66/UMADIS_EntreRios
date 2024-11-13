@@ -191,3 +191,20 @@ footer .container .logo-right {
   margin-left: auto !important;
 }
 
+.button-responsive {
+  display: flex;
+  justify-content: space-between; /* Distribuye los botones a lo largo del ancho */
+  width: 100%; /* Cubre toda la pantalla */
+}
+
+.button-responsive .btn {
+  flex: 1; /* Permite que cada botón tenga su propio espacio sin sobrepasar los límites */
+  margin: 0 5px; /* Opcional: Espacio entre botones */
+}
+
+@media (max-width: 768px) {
+  .button-responsive .btn {
+    flex: none;
+    width: auto;
+  }
+}

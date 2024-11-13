@@ -19,7 +19,6 @@ export async function  updateRegistro(id_registro_discapacidad) {
         // Establecer los valores en los campos del formulario
         document.getElementById('nombre_apellido').value = data.nombre_apellido || '';
         document.getElementById('fecha_nacimiento').value = data.fecha_nacimiento ? data.fecha_nacimiento.split('T')[0] : '';
-        document.getElementById('edad').value = data.edad || '';
         document.getElementById('sexo').value = data.sexo || '';
         document.getElementById('nro_ci').value = data.nro_ci || '';
         document.getElementById('estado_civil').value = data.estado_civil || '';
@@ -76,7 +75,8 @@ export async function  updateRegistro(id_registro_discapacidad) {
         console.log(formData);
         try {
             // Verificar campos obligatorios
-            const requiredFields = document.querySelectorAll('input[required]');
+            const form=document.getElementById('productForm');
+            const requiredFields = form.querySelectorAll('input[required]');
             let isValid = true;
 
             requiredFields.forEach(field => {

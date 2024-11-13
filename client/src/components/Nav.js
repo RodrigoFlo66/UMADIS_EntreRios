@@ -61,6 +61,7 @@ export function loadNav() {
   document.getElementById('showDataList').addEventListener('click', function() {
     document.getElementById('dataList').style.display = 'block';
     document.getElementById('showProductForm').style.display = 'block';
+    document.getElementById('customFilters').style.display = 'block';
     document.getElementById('download-csv').style.display = 'block';
     document.getElementById('productForm').style.display = 'none';
     document.getElementById('dataRegistro').style.display = 'none';

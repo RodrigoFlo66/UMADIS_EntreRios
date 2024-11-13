@@ -14,11 +14,10 @@ export async function showUserModal() {
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" id="modalBody">
                     <div class="container" id="user-list">
                         <!-- Los usuarios se cargarán aquí dinámicamente -->
                     </div>
-                    <button class="btn btn-success mt-3" id="add-user-btn">Añadir Usuario</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -30,7 +29,6 @@ export async function showUserModal() {
 
 document.body.insertAdjacentHTML('beforeend', modalHtml);
 const userContainer = document.querySelector('#user-list');
-const addButton = document.getElementById('add-user-btn');
 
 // Inicializa el modal con las opciones 'backdrop' y 'keyboard'
 $('#userModal').modal({
@@ -38,14 +36,27 @@ $('#userModal').modal({
     keyboard: false      // Evita cerrar el modal al presionar la tecla Esc
 });
 
-// Añade el evento para limpiar el contenedor cada vez que se abre el modal
+// Añade el evento para limpiar el contenedor y crear el botón al abrir el modal
 $('#userModal').on('shown.bs.modal', function () {
-    loadUsers();             // Carga los usuarios
-    addButton.disabled = false;  // Asegura que el botón esté habilitado
-});
+    loadUsers();  // Carga los usuarios
+    const modalBody = document.getElementById('modalBody');
+    const existingButton = document.getElementById('add-user-btn');
 
+    // Elimina el botón si ya existe para evitar duplicados
+    if (existingButton) {
+        existingButton.remove();
+    }
+
+    // Crea y añade el nuevo botón
+    const addNewButton = document.createElement('button');
+    addNewButton.id = 'add-user-btn';
+    addNewButton.type = 'submit';
+    addNewButton.className = 'btn btn-primary ml-2';
+    addNewButton.textContent = 'Añadir Usuario';
+    modalBody.appendChild(addNewButton);
     // Registra el evento `click` para añadir usuario solo una vez al cargar la página
-    addButton.addEventListener('click', () => addUserRow(userContainer));
+    addNewButton.addEventListener('click', () => addUserRow(userContainer));
+});
 
 // Función para añadir una nueva fila de usuario editable
 function addUserRow(container) {
@@ -81,7 +92,7 @@ function addUserRow(container) {
             <button class="btn btn-danger" id="cancel-btn-${newUserId}">Cancelar</button>
         </div>
     `;
-    container.innerHTML = '';  // Limpia el contenedor antes de agregar la nueva fila
+    //container.innerHTML = '';  // Limpia el contenedor antes de agregar la nueva fila
     container.appendChild(newRow);
 
     document.getElementById(`save-btn-${newUserId}`).addEventListener('click', async () => {
@@ -98,7 +109,7 @@ function addUserRow(container) {
     });
 }
 
-    $('#userModal').modal('show');
+    //$('#userModal').modal('show');
 }
 async function loadUsers() {
     const userContainer = document.querySelector('#user-list');
@@ -224,7 +235,7 @@ async function saveNewUser(newUserId) {
       }, 3000);
       const addButton = document.getElementById('add-user-btn');
         addButton.disabled = false;  // Habilita el botón de añadir
-        document.getElementById(`user-${newUserId}`).remove();  // Elimina la fila temporal
+        //document.getElementById(`user-${newUserId}`).remove();  // Elimina la fila temporal
       $('#userModal').modal('hide');
     }
     } else {

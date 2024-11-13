@@ -1,8 +1,11 @@
 import { serverUrl } from '../server.config.js';
+import { createFormAtencion } from './atencionForm.js';
+import { tablaPaciente } from './atencionList.js';
 import { updateRegistro } from './updateData.js';
 
 export async function mostrarPerfil(id_registro_discapacidad) {
     document.getElementById('showProductForm').style.display = 'none';
+    document.getElementById('customFilters').style.display = 'none';
     const container = document.getElementById("dataRegistro");
     container.innerHTML = ""; // Limpia el contenido anterior
 
@@ -63,7 +66,7 @@ export async function mostrarPerfil(id_registro_discapacidad) {
     buttonsContainer.className = "profile-buttons";
     buttonsContainer.appendChild(createButton("Editar Registro", () => editarRegistro(id_registro_discapacidad), 'btn btn-success me-2'));
     buttonsContainer.appendChild(createButton("Ver Historial", () => verHistorial(id_registro_discapacidad), 'btn btn-secondary me-2'));
-    buttonsContainer.appendChild(createButton("Registro de Atención", () => registrarAtencion(id_registro_discapacidad), 'btn btn-warning'));
+    buttonsContainer.appendChild(createButton("Registro de Atención", () => registrarAtencion(data), 'btn btn-warning'));
     container.appendChild(buttonsContainer);
 
     // Título de perfil
@@ -120,8 +123,10 @@ function editarRegistro(id_registro_discapacidad) {
     updateRegistro(id_registro_discapacidad);
 }
 function verHistorial(id) {
-    alert(`Ver historial de ID ${id}`);
+    
+    tablaPaciente(id);
 }
-function registrarAtencion(id) {
-    alert(`Registrar atención para ID ${id}`);
+function registrarAtencion(data) {
+    document.getElementById('atencionForm').style.display = 'block';
+    createFormAtencion(data);
 }

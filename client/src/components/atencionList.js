@@ -1,29 +1,19 @@
 import { mostrarPerfil } from './dataRegistro.js';
 import { serverUrl } from '../server.config.js';
 import * as Tabulator from '../../node_modules/tabulator-tables/dist/js/tabulator_esm.js';
-//const tableContainer = document.getElementById('dataList');
-let fetchedData = []; // Guardamos los datos originales para evitar múltiples llamadas a fetch
 
-async function fetchData() {
-    try {
-        const response = await fetch(`${serverUrl}/registros-pcd/1`);
-        const result = await response.json();
-        fetchedData = result.data;
-        return fetchedData;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        return [];
-    }
-}
-
-export async function initializeTable() {
+export async function tablaPaciente(id_registro_discapacidad) {
 ///////////////////////
-    document.getElementById('productForm').style.display = 'none';
-    const tableContainer = document.getElementById("dataList"); // Asegúrate de tener este contenedor en tu HTML
+    document.getElementById('dataRegistro').style.display = 'none';
+    //document.getElementById('productForm').style.display = 'none';
+    const tableContainer = document.getElementById("atencionList"); // Asegúrate de tener este contenedor en tu HTML
     
     // Paso 1: Cargar datos de la API o fuente de datos
-    const data = await fetchData();
-
+    const response = await fetch(`${serverUrl}/registros-atencion/${id_registro_discapacidad}`);
+    const result = await response.json();
+    console.log(result.registros);
+    const data = result.registros;
+    
     // Configuración de la localización en español
     const spanishLocale = {
         "pagination": {
@@ -35,21 +25,17 @@ export async function initializeTable() {
             "prev_title": "Página Anterior",
             "next": "Siguiente",
             "next_title": "Página Siguiente",
-        },
-        "columns": {
-            "name": "Nombre",
-            // Añade más traducciones si tienes nombres específicos en tus columnas
         }
     };
     // Define las configuraciones de columnas para ambos estados
     const defaultColumns = [
         { formatter: "rownum", width: 40 },
-        { title: "Distrito", field: "distrito_domicilio", headerFilter: "input" },
-        { title: "Nombres y Apellidos", field: "nombre_apellido", headerFilter: "input" },
-        { title: "Edad", field: "edad", headerFilter: "input" },
-        { title: "Tipo de Discapacidad", field: "tipo_discapacidad", headerFilter: "input" },
-        { title: "Grado de Discapacidad", field: "grado_discapacidad", headerFilter: "input" },
-        { title: "Teléfono", field: "telefono_pdc", headerFilter: "input" }
+        { title: "Detalle de atención", field: "atencion_realizada", headerFilter: "input" },
+        { title: "Donaicon-Beneficio", field: "donacion", headerFilter: "input" },
+        { title: "Área", field: "area_atencion", headerFilter: "input" },
+        { title: "Fecha", field: "fecha_registro", headerFilter: "input" },
+        { title: "Lugar", field: "lugar_registro", headerFilter: "input" },
+        { title: "Informante", field: "nombre_informante", headerFilter: "input" }
     ];
     const closedColumns = [
         { formatter: "rownum", width: 40 },
@@ -74,7 +60,7 @@ export async function initializeTable() {
         columns: defaultColumns
     });
     ///////////////////////////
-        filterTable(); // Agrega la barra de filtros personalizados
+      /*  filterTable(); // Agrega la barra de filtros personalizados
          // Crear filtros personalizados
         const ageInput = document.getElementById("ageRange");  // Suponiendo que tienes un input de rango para la edad
         const disabilityTypeSelect = document.getElementById("disabilityType"); // Suponiendo que tienes un select para el tipo de discapacidad  
@@ -117,7 +103,7 @@ export async function initializeTable() {
             table.clearFilter("permanencia"); // Quitar filtro si no hay selección
             table.setColumns(defaultColumns); // Cambia a columnas predeterminadas
         }
-    }
+    }*/
 /////////////////////////////////////////////////////////
     // Configura la exportación al hacer clic en el botón
     document.getElementById("download-csv").addEventListener("click", () => {
@@ -128,7 +114,7 @@ export async function initializeTable() {
     });
     
     
-    // Añade el evento de clic en las filas después de la configuración completa
+    /*// Añade el evento de clic en las filas después de la configuración completa
     table.on("rowClick", (e, row) => {
         const data = row.getData();
         const idRegistro = data.id_registro_discapacidad; 
@@ -136,10 +122,8 @@ export async function initializeTable() {
         document.getElementById('download-csv').style.display = 'none';
         document.getElementById('dataList').style.display = 'none';
         mostrarPerfil(idRegistro); 
-    });
+    });*/
 }
-
-initializeTable();
 
 function filterTable() {
     // Crear la barra de filtros en una variable
@@ -170,43 +154,4 @@ function filterTable() {
 
     // Asegurarse de que la barra de filtros esté visible
     filtersBar.style.display = 'block';
-}
-export function searchRecords(query) {
-    const filteredData = fetchedData.filter(row => {
-        return Object.keys(row).some(key => {
-            // Solo verifica los campos especificados
-            return [
-                "nombre_apellido",
-                "fecha_nacimiento",
-                "edad",
-                "sexo",
-                "nro_ci",
-                "estado_civil",
-                "idioma_pcd",
-                "tipo_discapacidad",
-                "grado_discapacidad",
-                "deficiencia",
-                "edad_inicio_discapacidad",
-                "dispositivo_utiliza",
-                "nivel_escolaridad",
-                "info_vivienda",
-                "info_laboral",
-                "nombre_familiar",
-                "nro_hijos_pcd",
-                "conyuge_pcd",
-                "direc_domicilio",
-                "distrito_domicilio",
-                "telefono_pdc",
-                "telefono_referencia",
-                "permanencia",
-                "motivo_cierre"
-            ].includes(key) && String(row[key]).toLowerCase().includes(query.toLowerCase());
-        });
-    });
-
-    if (table) {
-        table.setData(filteredData); // Actualiza la tabla con los datos filtrados
-    } else {
-        console.error('table no está disponible');
-    }
 }
