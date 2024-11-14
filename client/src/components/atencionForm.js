@@ -3,15 +3,15 @@ import { serverUrl } from '../server.config.js';
 import {createInputWithLabel, createSelectWithLabel} from './dataForm.js';
 import { mostrarPerfil } from './dataRegistro.js';
 
+const form = document.createElement('form');
+// Crear el formulario
+form.id = 'miFormAtencion';
+form.className = 'form-container';
 export function createFormAtencion(data) {
     const id_registro_discapacidad = data.id_registro_discapacidad;
     console.log(data);
-    document.getElementById('dataRegistro').style.display = 'none';
-    document.getElementById('showDataList').style.display = 'none';
-    // Crear el formulario
-    const form = document.createElement('form');
-    form.id = 'miFormAtencion';
-    form.className = 'form-container';
+    
+    form.innerHTML = ""; // Limpiar contenido previo del formulario
   
     // Crear dos contenedores para las mitades del formulario
     const leftHalf = document.createElement('div');
@@ -67,21 +67,13 @@ export function createFormAtencion(data) {
     // Crear y agregar el contenedor de botones al formulario
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'button-responsive';
+    buttonContainer.id = 'buttonContainerList';
   
-    const clearButton = document.createElement('button');
-    clearButton.type = 'button'; 
-    clearButton.className = 'btn btn-warning mt-2'; 
-    clearButton.textContent = 'Limpiar';
-    clearButton.addEventListener('click', function() {
-      showConfirmModal('¿Estás seguro de que deseas limpiar el formulario?', function() {
-        form.reset(); // Limpia el formulario si el usuario confirma
-      });
-    });
     
   
     const cancelButton = document.createElement('button');
     cancelButton.type = 'button'; 
-    cancelButton.className = 'btn btn-secondary mt-2'; 
+    cancelButton.className = 'btn btn-secondary mt-2 visible'; 
     cancelButton.textContent = 'Cancelar';
     cancelButton.addEventListener('click', function() {
       showConfirmModal('No se guardarán los cambios realizados. ¿Estás seguro de que deseas continuar?', function() {
@@ -90,17 +82,18 @@ export function createFormAtencion(data) {
         document.getElementById('showDataList').style.display = 'block';
         mostrarPerfil(id_registro_discapacidad);
         document.getElementById('atencionForm').style.display = 'none';
+        
       });
     });
     
   
     const saveButton = document.createElement('button');
+    saveButton.id = 'saveButtonList';
     saveButton.type = 'submit';
-    saveButton.className = 'btn btn-primary mt-2';
+    saveButton.className = 'btn btn-primary mt-2 visible';
     saveButton.textContent = 'Guardar';
 
     buttonContainer.appendChild(saveButton);
-    buttonContainer.appendChild(clearButton);
     buttonContainer.appendChild(cancelButton);
     // Seleccionar el contenedor del formulario en el DOM
     const formContainer = document.getElementById('atencionForm');
@@ -219,4 +212,7 @@ export function getFromData() {
     link_adjunto: document.getElementById('link_adjunto').value
 };
 return formData;
+}
+export function resetForm() {
+  form.reset();
 }

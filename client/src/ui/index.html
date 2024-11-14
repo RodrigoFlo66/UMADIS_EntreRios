@@ -23,11 +23,12 @@
     <div id="message" class="col-12"></div>
     <button id="download-csv" class = "button-container">Exportar CSV</button> 
     <div id="buttonContainer" class="button-container"></div>
-
+    
     <div id="productForm"></div>
     <div id="dataRegistro"></div>
     <div id="customFilters"></div>
     <div id="atencionForm"></div>
+    <div id="listaAntencion"></div>
   </main>
 
   <footer class="footer py-3">
@@ -56,6 +57,7 @@
       document.getElementById('productForm').style.display = 'none'; 
       document.getElementById('dataRegistro').style.display = 'none';
       loadNav();
+      document.getElementById('atrasHistoricoPaciente').style.display = 'none';
     });
   </script>
 </body>

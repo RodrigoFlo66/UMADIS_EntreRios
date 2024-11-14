@@ -15,7 +15,8 @@ const {
     createRegistroAtencion,
     updateRegistroAtencion,
     getRegistrosAtencionByDiscapacidad,
-    getRegistrosAtencionByUsuario
+    getRegistrosAtencionByUsuario,
+    getRegistrosAtencion
 } = require("../controllers/data.controllers");
 
 router.get("/check", checkDatabaseConnection);
@@ -32,5 +33,6 @@ router.post("/registro-atencion/:id_usuario/:id_registro_discapacidad", createRe
 router.put("/registro-atencion/:id_registro_atencion", updateRegistroAtencion);
 router.get("/registros-atencion/:id_registro_discapacidad", getRegistrosAtencionByDiscapacidad);
 router.get("/registros-atencion-usuario/:id_usuario", getRegistrosAtencionByUsuario);
+router.get("/registro-atencion/:id_registro_atencion", getRegistrosAtencion);
 
 module.exports = router;

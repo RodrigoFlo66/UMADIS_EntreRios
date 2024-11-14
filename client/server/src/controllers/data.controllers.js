@@ -646,6 +646,40 @@ const getRegistrosAtencionByUsuario = async (req, res) => {
     return res.status(500).json({ error: 'Error al obtener los registros de atención' });
   }
 };
+const getRegistrosAtencion = async (req, res) => {
+  const { id_registro_atencion } = req.params;
+
+  try {
+    const query = `
+      SELECT 
+        fecha_registro,
+        lugar_registro,
+        nombre_pcd,
+        atencion_realizada,
+        area_atencion,
+        donacion,
+        nombre_informante,
+        link_adjunto,
+        id_registro_discapacidad
+      FROM public.REGISTRO_ATENCION_PCD
+      WHERE id_registro_atencion = $1;
+    `;
+
+    const result = await pool.query(query, [id_registro_atencion]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron registros de atención para este ID de discapacidad' });
+    }
+
+    return res.json({
+      message: 'Registro de atención obtenido exitosamente',
+      registros: result.rows
+    });
+  } catch (error) {
+    console.error('Error al obtener los registros de atención:', error);
+    return res.status(500).json({ error: 'Error al obtener los registros de atención' });
+  }
+};
 module.exports = {
     checkDatabaseConnection,
     createRegistroPcd,
@@ -660,5 +694,6 @@ module.exports = {
     createRegistroAtencion,
     updateRegistroAtencion,
     getRegistrosAtencionByDiscapacidad,
-    getRegistrosAtencionByUsuario
+    getRegistrosAtencionByUsuario,
+    getRegistrosAtencion
 }

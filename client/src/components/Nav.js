@@ -23,6 +23,11 @@ export function loadNav() {
         <li class="nav-item"> 
           <a class="nav-link" href="#" id="editData">Editando Registro</a>
         </li>
+        <li class="nav-item"> 
+          <a class="nav-link" href="#" id="atrasHistoricoPaciente">
+            <i class="fas fa-arrow-left"></i> Atras
+          </a>
+        </li>
       </ul>
       <!-- Contenedor del ícono de usuario, alineado a la derecha -->
       <div class="ms-auto me-3">
@@ -66,6 +71,7 @@ export function loadNav() {
     document.getElementById('productForm').style.display = 'none';
     document.getElementById('dataRegistro').style.display = 'none';
     document.getElementById('exportData').style.display = 'none';
+    document.getElementById('atrasHistoricoPaciente').style.display = 'none';
     //loadData(1, false);
   });
 
@@ -81,6 +87,12 @@ export function loadNav() {
   document.getElementById('userIcon').addEventListener('click', function() {
     showUserModal();
   });
+  document.getElementById('atrasHistoricoPaciente').addEventListener('click', function() {
+    document.getElementById('dataRegistro').style.display = 'block';
+    document.getElementById('showDataList').style.display = 'block';
+    document.getElementById('atrasHistoricoPaciente').style.display = 'none';
+    document.getElementById('listaAntencion').style.display = 'none';
+});
 }
 
 

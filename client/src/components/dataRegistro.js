@@ -12,7 +12,8 @@ export async function mostrarPerfil(id_registro_discapacidad) {
     const response = await fetch(`${serverUrl}/registro-pcd/${id_registro_discapacidad}`);
     const dataRegistro = await response.json();
     const data = dataRegistro.data;
-
+    createFormAtencion(data);
+    document.getElementById('atencionForm').style.display = 'none';
     // Estilos CSS (puedes moverlos a un archivo CSS separado si prefieres)
     const style = document.createElement("style");
     style.textContent = `
@@ -122,11 +123,20 @@ function createButton(text, onClick, className) {
 function editarRegistro(id_registro_discapacidad) {
     updateRegistro(id_registro_discapacidad);
 }
-function verHistorial(id) {
-    
-    tablaPaciente(id);
+function verHistorial(id_registro_discapacidad) { 
+    document.getElementById('listaAntencion').style.display = 'block';
+    tablaPaciente(id_registro_discapacidad);
+    document.getElementById('dataRegistro').style.display = 'none';
 }
 function registrarAtencion(data) {
     document.getElementById('atencionForm').style.display = 'block';
-    createFormAtencion(data);
+    document.getElementById('dataRegistro').style.display = 'none';
+    document.getElementById('showDataList').style.display = 'none';
+    const existingButton = document.getElementById('editButtonIdList'); 
+    const saveButton = document.getElementById('saveButtonList');
+
+    if (existingButton) {
+        existingButton.classList.remove('visible');
+        saveButton.classList.add('visible');
+    }
 }

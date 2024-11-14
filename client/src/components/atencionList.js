@@ -1,17 +1,29 @@
-import { mostrarPerfil } from './dataRegistro.js';
 import { serverUrl } from '../server.config.js';
 import * as Tabulator from '../../node_modules/tabulator-tables/dist/js/tabulator_esm.js';
+import {updateAtencion} from './updateDataAtencion.js';
+import { mostrarPerfil } from './dataRegistro.js';
 
 export async function tablaPaciente(id_registro_discapacidad) {
 ///////////////////////
-    document.getElementById('dataRegistro').style.display = 'none';
-    //document.getElementById('productForm').style.display = 'none';
-    const tableContainer = document.getElementById("atencionList"); // Asegúrate de tener este contenedor en tu HTML
+    //const id_registro_discapacidad = AllData.id_registro_discapacidad;
+    document.getElementById('atrasHistoricoPaciente').style.display = 'block';
+    document.getElementById('showDataList').style.display = 'none';
     
+    const mainContainer = document.getElementById("listaAntencion"); // Asegúrate de tener este contenedor en tu HTML
+    mainContainer.innerHTML = ""; // Limpia el contenido anterior
+    // Crear y agregar el título
+    const profileTitle = document.createElement("h2");
+    profileTitle.textContent = "REPORTE HISTOÓRICO DEL PACIENTE";
+    profileTitle.className = "text-center text-primary mb-4";
+    mainContainer.appendChild(profileTitle);
+    
+    // Contenedor específico para la tabla
+    const tableContainer = document.createElement("div");
+    tableContainer.id = "atencionList";
+    mainContainer.appendChild(tableContainer);
     // Paso 1: Cargar datos de la API o fuente de datos
     const response = await fetch(`${serverUrl}/registros-atencion/${id_registro_discapacidad}`);
     const result = await response.json();
-    console.log(result.registros);
     const data = result.registros;
     
     // Configuración de la localización en español
@@ -31,20 +43,18 @@ export async function tablaPaciente(id_registro_discapacidad) {
     const defaultColumns = [
         { formatter: "rownum", width: 40 },
         { title: "Detalle de atención", field: "atencion_realizada", headerFilter: "input" },
-        { title: "Donaicon-Beneficio", field: "donacion", headerFilter: "input" },
+        { title: "Donación-Beneficio", field: "donacion", headerFilter: "input" },
         { title: "Área", field: "area_atencion", headerFilter: "input" },
-        { title: "Fecha", field: "fecha_registro", headerFilter: "input" },
+        { 
+            title: "Fecha", 
+            field: "fecha_registro", 
+            headerFilter: "input", 
+            mutator: (value) => value ? value.split('T')[0] : 'N/A' 
+        },
         { title: "Lugar", field: "lugar_registro", headerFilter: "input" },
         { title: "Informante", field: "nombre_informante", headerFilter: "input" }
     ];
-    const closedColumns = [
-        { formatter: "rownum", width: 40 },
-        { title: "Distrito", field: "distrito_domicilio", headerFilter: "input" },
-        { title: "Nombres y Apellidos", field: "nombre_apellido", headerFilter: "input" },
-        { title: "Tipo de Discapacidad", field: "tipo_discapacidad", headerFilter: "input" },
-        { title: "Grado de Discapacidad", field: "grado_discapacidad", headerFilter: "input" },
-        { title: "Motivo de Cierre", field: "motivo_cierre", headerFilter: "input" }
-    ];
+    
     // Paso 2: Inicialización de la tabla con todas las opciones, incluida la paginación
     const table = new Tabulator.TabulatorFull(tableContainer, {
         data: data,
@@ -114,15 +124,13 @@ export async function tablaPaciente(id_registro_discapacidad) {
     });
     
     
-    /*// Añade el evento de clic en las filas después de la configuración completa
+    // Añade el evento de clic en las filas después de la configuración completa
     table.on("rowClick", (e, row) => {
+        document.getElementById('atrasHistoricoPaciente').style.display = 'none';
         const data = row.getData();
-        const idRegistro = data.id_registro_discapacidad; 
-        document.getElementById('dataRegistro').style.display = 'block';
-        document.getElementById('download-csv').style.display = 'none';
-        document.getElementById('dataList').style.display = 'none';
-        mostrarPerfil(idRegistro); 
-    });*/
+        const idRegistro = data.id_registro_atencion; 
+        updateAtencion(idRegistro, id_registro_discapacidad); 
+    });
 }
 
 function filterTable() {

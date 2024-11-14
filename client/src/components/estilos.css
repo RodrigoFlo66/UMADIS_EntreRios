@@ -208,3 +208,12 @@ footer .container .logo-right {
     width: auto;
   }
 }
+.button-responsive button {
+  position: absolute;
+   visibility: hidden; /* Oculta el botón pero mantiene su espacio */
+}
+
+.button-responsive button.visible {
+   visibility: visible; /* Muestra el botón */
+   position: static; /* Mantiene el botón en el flujo del documento */
+}
