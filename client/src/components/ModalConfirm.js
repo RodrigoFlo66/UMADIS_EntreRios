@@ -22,7 +22,7 @@ export function showConfirmModal(message, onConfirm) {
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-              <button type="button" class="btn btn-warning" id="confirmModalButton">Confirmar</button>
+              <button type="button" class="btn btn-success" id="confirmModalButton">Confirmar</button>
             </div>
           </div>
         </div>

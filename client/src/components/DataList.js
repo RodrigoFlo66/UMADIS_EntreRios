@@ -76,28 +76,33 @@ export async function initializeTable() {
     ///////////////////////////
         filterTable(); // Agrega la barra de filtros personalizados
          // Crear filtros personalizados
-        const ageInput = document.getElementById("ageRange");  // Suponiendo que tienes un input de rango para la edad
-        const disabilityTypeSelect = document.getElementById("disabilityType"); // Suponiendo que tienes un select para el tipo de discapacidad  
-        const permanenciaSelect = document.getElementById("permanencia"); // Suponiendo que tienes un select para la permanencia  
-        // Escuchar los cambios en el rango de edad
-        console.log(ageInput.value);
-        ageInput.addEventListener("input", () => {
-            const ageValue = ageInput.value;
-            console.log(ageValue);
-            if (ageValue) {
-                table.setFilter("edad", "<=", ageValue); // Filtrar las filas por la columna "edad"
-            } else {
-                table.clearFilter("edad"); // Quitar filtro si el campo está vacío
-            }
-        });
-
+        const disabilityTypeSelect = document.getElementById("estadoCivilF"); // Suponiendo que tienes un select para el tipo de discapacidad 
+        const filtroSexo = document.getElementById("sexoFiltro");
+        const filtroNivelEscolaridad = document.getElementById("nivelEscolaridadF");
+        const permanenciaSelect = document.getElementById("permanenciaL"); // Suponiendo que tienes un select para la permanencia  
         // Escuchar los cambios en el tipo de discapacidad
         disabilityTypeSelect.addEventListener("change", () => {
             const typeValue = disabilityTypeSelect.value;
             if (typeValue) {
-                table.setFilter("tipo_discapacidad", "=", typeValue); // Filtrar las filas por el tipo de discapacidad
+                table.setFilter("estado_civil", "=", typeValue); // Filtrar las filas por el tipo de discapacidad
             } else {
-                table.clearFilter("tipo_discapacidad"); // Quitar filtro si no hay selección
+                table.clearFilter("estado_civil"); // Quitar filtro si no hay selección
+            }
+        });
+        filtroSexo.addEventListener("change", () => {
+            const typeValue = filtroSexo.value;
+            if (typeValue) {
+                table.setFilter("sexo", "=", typeValue); // Filtrar las filas por el tipo de discapacidad
+            } else {
+                table.clearFilter("sexo"); // Quitar filtro si no hay selección
+            }
+        });
+        filtroNivelEscolaridad.addEventListener("change", () => {
+            const typeValue = filtroNivelEscolaridad.value;
+            if (typeValue) {
+                table.setFilter("nivel_escolaridad", "=", typeValue); // Filtrar las filas por el tipo de discapacidad
+            } else {
+                table.clearFilter("nivel_escolaridad"); // Quitar filtro si no hay selección
             }
         });
         permanenciaSelect.addEventListener("change", (event) => {
@@ -120,7 +125,7 @@ export async function initializeTable() {
     }
 /////////////////////////////////////////////////////////
     // Configura la exportación al hacer clic en el botón
-    document.getElementById("download-csv").addEventListener("click", () => {
+    document.getElementById("printAllButton").addEventListener("click", () => {
         table.download("csv", "data.csv", {
             delimiter: ",", // Cambia el delimitador si necesitas otro
             bom: true       // Incluye BOM para compatibilidad UTF-8
@@ -133,7 +138,6 @@ export async function initializeTable() {
         const data = row.getData();
         const idRegistro = data.id_registro_discapacidad; 
         document.getElementById('dataRegistro').style.display = 'block';
-        document.getElementById('download-csv').style.display = 'none';
         document.getElementById('dataList').style.display = 'none';
         mostrarPerfil(idRegistro); 
     });
@@ -145,27 +149,61 @@ function filterTable() {
     // Crear la barra de filtros en una variable
     const filtersBar = document.getElementById("customFilters");
     filtersBar.innerHTML = `
-        <!-- Filtro de rango de edad -->
-      <label for="ageRange">Edad máxima:</label>
-      <input type="number" id="ageRange" placeholder="Ingrese la edad máxima" style="margin-right: 20px;">
+        <div class="form-group d-flex flex-wrap align-items-center justify-content-between mb-3" style="gap: 15px;">
+    <!-- Filtro de permanencia -->
+    <div class="d-flex align-items-center">
+        <label for="permanenciaL" class="form-label me-2 mb-0" style="white-space: nowrap;">Permanencia:</label>
+        <select id="permanenciaL" class="form-select" style="width: auto;">
+            <option value="">Todos</option>
+            <option value="PERMANECE">Permanece</option>
+            <option value="CERRADO">Cerrado</option>
+        </select>
+    </div>
 
-      <!-- Filtro de tipo de discapacidad -->
-      <label for="disabilityType">Tipo de Discapacidad:</label>
-      <select id="disabilityType" style="margin-right: 20px;">
-          <option value="">Todos</option>
-          <option value="Visual">Visual</option>
-          <option value="Auditiva">Auditiva</option>
-          <option value="Motora">Motora</option>
-          <option value="Intelectual">Intelectual</option>
-          <option value="Psicosocial">Psicosocial</option>
-      </select>
-      <!-- Filtro de permanencia -->
-      <label for="permanencia">Permanencia:</label>
-      <select id="permanencia" style="margin-right: 20px;">
-          <option value="">Todos</option>
-          <option value="PERMANECE">Permanece</option>
-          <option value="CERRADO">Cerrado</option>
-      </select>
+    <!-- Filtro de estado civil -->
+    <div class="d-flex align-items-center">
+        <label for="estadoCivilF" class="form-label me-2 mb-0" style="white-space: nowrap;">Estado civil:</label>
+        <select id="estadoCivilF" class="form-select" style="width: auto;">
+            <option value="">Todos</option>
+            <option value="SOLTERO(A)">SOLTERO(A)</option>
+            <option value="CASADO(A)">CASADO(A)</option>
+            <option value="DIVORCIADO(A)">DIVORCIADO(A)</option>
+            <option value="CONCUBINATO">CONCUBINATO</option>
+            <option value="SEPARADO">SEPARADO</option>
+        </select>
+    </div>
+
+    <!-- Filtro de sexo -->
+    <div class="d-flex align-items-center">
+        <label for="sexoFiltro" class="form-label me-2 mb-0" style="white-space: nowrap;">Sexo:</label>
+        <select id="sexoFiltro" class="form-select" style="width: auto;">
+            <option value="">Todos</option>
+            <option value="VARON">VARON</option>
+            <option value="MUJER">MUJER</option>
+        </select>
+    </div>
+
+    <!-- Filtro de nivel de escolaridad -->
+    <div class="d-flex align-items-center">
+        <label for="nivelEscolaridadF" class="form-label me-2 mb-0" style="white-space: nowrap;">Nivel de Escolaridad:</label>
+        <select id="nivelEscolaridadF" class="form-select" style="width: auto;">
+            <option value="">Todos</option>
+            <option value="NINGUNO">NINGUNO</option>
+            <option value="PRIMARIA">PRIMARIA</option>
+            <option value="SECUNDARIA">SECUNDARIA</option>
+            <option value="TECNICO">TECNICO</option>
+            <option value="UNIVERSITARIO">UNIVERSITARIO</option>
+        </select>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex align-items-center ">
+        <button id="printAllButton" class="btn btn-success me-2">Exportar Todo</button>
+        <button id="printFilteredButton" class="btn btn-primary">Exportar Filtro</button>
+    </div>
+</div>
+
+
     `;
 
     // Asegurarse de que la barra de filtros esté visible

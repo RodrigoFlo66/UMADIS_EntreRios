@@ -1,6 +1,6 @@
 import { showConfirmModal } from './ModalConfirm.js';
 import { initializeTable } from './DataList.js';
-import { serverUrl } from '../server.config.js';
+import { id_municipio, serverUrl } from '../server.config.js';
 // Crear el formulario y sus elementos con JavaScript
 const form = document.createElement('form');
 form.id = 'miForm';
@@ -262,7 +262,7 @@ const nombreFamiliar = createInputWithLabel('nombre_familiar', 'text', "", "Nomb
   const numCelularRef = createInputWithLabel('telefono_referencia', 'number', "", "Numero de Celular de referencia", false);
   rightHalf.appendChild(numCelularRef);
   //DATOS DE PERMANENCIA//
-  const permanencia = createSelectWithLabel('permanencia', [
+  const permanencia = createSelectWithLabel('permanenciaForm', [
     { value: '', text: 'Seleccione una opción' },
       { value: 'PERMANECE', text: 'PERMANECE' },
       { value: 'CERRADO', text: 'CERRADO'}
@@ -302,7 +302,8 @@ clearButton.addEventListener('click', function() {
       //document.getElementById('download-csv').style.display = 'block';
       document.getElementById('productForm').style.display = 'none';
       document.getElementById('editData').style.display = 'none';
-    
+      document.getElementById('ReporteFuncionario').style.display = 'block';
+      document.getElementById('customFilters').style.display = 'block';
     });
   });
 
@@ -368,10 +369,10 @@ saveButton.addEventListener('click', async function(e) {
     }
 
     const formData = getFromData();
-    console.log(formData);
+    console.log(formData.permanencia);
     // Enviar los datos con fetch a tu backend
     try{ 
-      const response = await fetch(`${serverUrl}/registro-pcd/1`, {
+      const response = await fetch(`${serverUrl}/registro-pcd/${id_municipio}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -389,6 +390,9 @@ saveButton.addEventListener('click', async function(e) {
        document.getElementById('productForm').style.display = 'none';
        document.getElementById('editData').style.display = 'none';*/
        document.getElementById('showDataList').style.display = 'block';
+       document.getElementById('ReporteFuncionario').style.display = 'block';
+      document.getElementById('customFilters').style.display = 'block';
+  
        initializeTable();
        const messageDiv = document.getElementById('message');
       messageDiv.textContent = 'Registro completado con éxito.';
@@ -442,7 +446,7 @@ export function getFromData() {
     distrito_domicilio: document.getElementById('distrito_domicilio').value,
     telefono_pdc: getIntValue('telefono_pcd'),
     telefono_referencia: getIntValue('telefono_referencia'),
-    permanencia: document.getElementById('permanencia').value,
+    permanencia: document.getElementById('permanenciaForm').value,
     motivo_cierre: document.getElementById('motivo_cierre').value
 };
 return formData;

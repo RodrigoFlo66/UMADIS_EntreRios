@@ -1,8 +1,10 @@
+-- Tabla MUNICIPIO
 CREATE TABLE public.MUNICIPIO (
     id_municipio SERIAL PRIMARY KEY,
     nombre_municipio VARCHAR(100) NOT NULL
 );
 
+-- Tabla USUARIO con relación al MUNICIPIO
 CREATE TABLE public.USUARIO (
     id_usuario SERIAL PRIMARY KEY,
     nombre_usuario VARCHAR(100) NOT NULL,
@@ -13,11 +15,11 @@ CREATE TABLE public.USUARIO (
         REFERENCES public.MUNICIPIO (id_municipio)
 );
 
+-- Tabla REGISTRO_PCD con relación al MUNICIPIO
 CREATE TABLE public.REGISTRO_PCD (
     id_registro_discapacidad SERIAL PRIMARY KEY,
     nombre_apellido VARCHAR(100) NOT NULL,
     fecha_nacimiento DATE,
-    edad INTEGER,
     sexo VARCHAR(50),
     nro_ci INTEGER,
     estado_civil VARCHAR(50),
@@ -39,11 +41,12 @@ CREATE TABLE public.REGISTRO_PCD (
     telefono_referencia VARCHAR(20), 
     permanencia VARCHAR(20),
     motivo_cierre VARCHAR(100),
-    id_usuario INTEGER NOT NULL,
-    CONSTRAINT usuario_registro_pcd_fk FOREIGN KEY (id_usuario)
-        REFERENCES public.USUARIO (id_usuario)
+    id_municipio INTEGER NOT NULL,
+    CONSTRAINT municipio_registro_pcd_fk FOREIGN KEY (id_municipio)
+        REFERENCES public.MUNICIPIO (id_municipio)
 );
 
+-- Tabla REGISTRO_ATENCION_PCD con relación al REGISTRO_PCD
 CREATE TABLE public.REGISTRO_ATENCION_PCD (
     id_registro_atencion SERIAL PRIMARY KEY,
     fecha_registro DATE NOT NULL,
@@ -54,10 +57,7 @@ CREATE TABLE public.REGISTRO_ATENCION_PCD (
     donacion VARCHAR(100),
     nombre_informante VARCHAR(100) NOT NULL,
     link_adjunto VARCHAR(255),
-    id_usuario INTEGER NOT NULL,
     id_registro_discapacidad INTEGER NOT NULL,
-    CONSTRAINT usuario_registro_atencion_pcd_fk FOREIGN KEY (id_usuario)
-        REFERENCES public.USUARIO (id_usuario),
     CONSTRAINT registro_pcd_registro_atencion_pcd_fk FOREIGN KEY (id_registro_discapacidad)
         REFERENCES public.REGISTRO_PCD (id_registro_discapacidad)
 );

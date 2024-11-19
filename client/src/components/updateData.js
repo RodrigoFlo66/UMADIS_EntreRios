@@ -38,7 +38,7 @@ export async function  updateRegistro(id_registro_discapacidad) {
         document.getElementById('distrito_domicilio').value = data.distrito_domicilio || '';
         document.getElementById('telefono_pcd').value = data.telefono_pdc || '';
         document.getElementById('telefono_referencia').value = data.telefono_referencia || '';
-        document.getElementById('permanencia').value = data.permanencia || '';
+        document.getElementById('permanenciaForm').value = data.permanencia || '';
         document.getElementById('motivo_cierre').value = data.motivo_cierre || '';
     } catch (error) {
         console.error('Hubo un problema con la solicitud de actualización del registro:', error);
@@ -128,6 +128,7 @@ export async function  updateRegistro(id_registro_discapacidad) {
             document.getElementById('productForm').style.display = 'none';
             document.getElementById('editData').style.display = 'none';
             document.getElementById('filterData').style.display = 'none';
+            document.getElementById('ReporteFuncionario').style.display = 'block';
             initializeTable();
                 // Muestra un mensaje de éxito
             

@@ -2,7 +2,80 @@ import { showConfirmModal } from './ModalConfirm.js';
 import { serverUrl } from '../server.config.js';
 import {createInputWithLabel, createSelectWithLabel} from './dataForm.js';
 import { mostrarPerfil } from './dataRegistro.js';
+ let linkAdjunto;
+function handleFileUpload(event) {
+  const file = event.target.files[0];
 
+  if (file) {
+      // Validar que el archivo sea un PDF
+      if (file.type !== "application/pdf") {
+          alert("Por favor, selecciona un archivo PDF.");
+          event.target.value = ""; // Resetear el campo
+          return;
+      }
+
+      // Subir el archivo al servidor
+      uploadFileToServer(file);
+  }
+}
+async function uploadFileToServer(file) {
+  // Crear un objeto FormData para enviar el archivo
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+      // Realizar la solicitud POST al servidor
+      const response = await fetch(`${serverUrl}/api/upload`, {
+          method: 'POST',
+          body: formData,
+      });
+
+      // Verificar si la respuesta es exitosa
+      if (!response.ok) {
+          throw new Error('Error en la solicitud al servidor.');
+      }
+
+      // Parsear la respuesta como JSON
+      const data = await response.json();
+
+      // Verificar si el servidor devuelve un enlace
+      if (data.link) {
+          console.log('Archivo subido exitosamente:', data.link);
+          // Aquí puedes guardar el enlace en tu base de datos o usarlo como necesites
+          linkAdjunto = data.link; // Implementa esta función según sea necesario
+      } else {
+          alert('El servidor no devolvió un enlace. Intenta nuevamente.');
+      }
+  } catch (error) {
+      console.error('Error al subir el archivo:', error);
+      alert('Hubo un problema al subir el archivo. Intenta nuevamente.');
+  }
+}
+// Función para crear el campo de archivo
+function createFileInputWithLabel(id, labelText) {
+  const container = document.createElement('div');
+  container.className = 'form-group mb-3';
+
+  const label = document.createElement('label');
+  label.htmlFor = id;
+  label.textContent = labelText;
+  label.className = 'form-label';
+
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.id = id;
+  input.name = id;
+  input.className = 'form-control';
+  input.accept = 'application/pdf'; // Solo permite archivos PDF
+
+  // Escuchar cambios en el archivo para validar y manejar la subida
+  input.addEventListener('change', handleFileUpload);
+
+  container.appendChild(label);
+  container.appendChild(input);
+
+  return container;
+}
 const form = document.createElement('form');
 // Crear el formulario
 form.id = 'miFormAtencion';
@@ -57,8 +130,8 @@ export function createFormAtencion(data) {
     const informante = createInputWithLabel('nombre_informante', 'text', "", "Nombre del informante", true);
     rightHalf.appendChild(informante);
   
-    const adjunto = createInputWithLabel('link_adjunto', 'text', "", "Documento adjunto", true);
-    rightHalf.appendChild(adjunto);
+    const adjunto = createFileInputWithLabel('link_adjunto', "Documento adjunto (PDF)");
+rightHalf.appendChild(adjunto);
   
     // Añadir las mitades al formulario
     form.appendChild(leftHalf);
@@ -73,7 +146,7 @@ export function createFormAtencion(data) {
   
     const cancelButton = document.createElement('button');
     cancelButton.type = 'button'; 
-    cancelButton.className = 'btn btn-secondary mt-2 visible'; 
+    cancelButton.className = 'btn btn-warning mt-2 visible'; 
     cancelButton.textContent = 'Cancelar';
     cancelButton.addEventListener('click', function() {
       showConfirmModal('No se guardarán los cambios realizados. ¿Estás seguro de que deseas continuar?', function() {
@@ -90,7 +163,7 @@ export function createFormAtencion(data) {
     const saveButton = document.createElement('button');
     saveButton.id = 'saveButtonList';
     saveButton.type = 'submit';
-    saveButton.className = 'btn btn-primary mt-2 visible';
+    saveButton.className = 'btn btn-success mt-2 visible';
     saveButton.textContent = 'Guardar';
 
     buttonContainer.appendChild(saveButton);
@@ -156,7 +229,7 @@ saveButton.addEventListener('click', async function(e) {
     console.log(formData);
     // Enviar los datos con fetch a tu backend
     try{ ///registro-atencion/:id_usuario/:id_registro_discapacidad
-      const response = await fetch(`${serverUrl}/registro-atencion/1/${id_registro_discapacidad}`, {
+      const response = await fetch(`${serverUrl}/registro-atencion/${id_registro_discapacidad}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -209,7 +282,7 @@ export function getFromData() {
     area_atencion: document.getElementById('area_atencion').value,
     donacion: document.getElementById('donacion').value,
     nombre_informante: document.getElementById('nombre_informante').value,
-    link_adjunto: document.getElementById('link_adjunto').value
+    link_adjunto: linkAdjunto
 };
 return formData;
 }

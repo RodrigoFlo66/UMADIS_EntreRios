@@ -1,5 +1,38 @@
 const bcrypt = require('bcrypt'); 
 const pool = require("../db");
+const multer = require("multer");
+const { createAndUploadFile } = require('../uploadPDF.js');
+const storage = multer.memoryStorage(); // Almacena el archivo en memoria como buffer
+const upload = multer({ storage });
+// Configuración de Multer para aceptar solo archivos PDF
+const uploadFile = (req, res, next) => {
+  upload.single('file')(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+          return res.status(400).json({ error: err.message });
+      } else if (err) {
+          return res.status(400).json({ error: err.message });
+      }
+
+      const file = req.file;
+
+      if (!file) {
+          return res.status(400).json({ error: "Por favor, sube un archivo." });
+      }
+
+      try {
+          console.log("Archivo recibido: ", file.originalname);
+
+          // Subir el archivo a Google Drive
+          const link = await createAndUploadFile(file);
+
+          // Enviar la URL del archivo subido al cliente
+          res.json({ link });
+      } catch (error) {
+          console.error("Error al subir el archivo a Google Drive:", error);
+          res.status(500).json({ error: "No se pudo subir el archivo. Intenta nuevamente." });
+      }
+  });
+};
 
 const checkDatabaseConnection = async (req, res) => {
   try {
@@ -46,7 +79,7 @@ const getRegistroById = async (req, res) => {
         r.telefono_referencia,
         r.permanencia,
         r.motivo_cierre,
-        r.id_usuario
+        r.id_municipio
       FROM public.REGISTRO_PCD r
       WHERE r.id_registro_discapacidad = $1;
     `;
@@ -96,10 +129,9 @@ const getRegistrosByMunicipio = async (req, res) => {
         r.telefono_referencia,
         r.permanencia,
         r.motivo_cierre,
-        r.id_usuario
+        r.id_municipio
       FROM public.REGISTRO_PCD r
-      JOIN public.USUARIO u ON r.id_usuario = u.id_usuario
-      WHERE u.id_municipio = $1;
+      WHERE r.id_municipio = $1;
     `;
     const result = await pool.query(query, [id_municipio]);
 
@@ -140,7 +172,7 @@ const createRegistroPcd = async (req, res) => {
     motivo_cierre
   } = req.body;
 
-  const { id_usuario } = req.params; 
+  const { id_municipio } = req.params; 
 
   try {
     // Consulta SQL para insertar los datos en la tabla REGISTRO_PCD
@@ -169,7 +201,7 @@ const createRegistroPcd = async (req, res) => {
         telefono_referencia,
         permanencia,
         motivo_cierre,
-        id_usuario
+        id_municipio
       ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24
       ) RETURNING id_registro_discapacidad;
@@ -200,7 +232,7 @@ const createRegistroPcd = async (req, res) => {
       telefono_referencia,
       permanencia,
       motivo_cierre,
-      id_usuario
+      id_municipio
     ]);
 
     // Retornar una respuesta con el ID del nuevo registro creado
@@ -467,7 +499,7 @@ const loginUsuario = async (req, res) => {
 };
 
 const createRegistroAtencion = async (req, res) => {
-  const { id_usuario, id_registro_discapacidad } = req.params;
+  const {id_registro_discapacidad } = req.params;
   const {
     fecha_registro,
     lugar_registro,
@@ -490,10 +522,9 @@ const createRegistroAtencion = async (req, res) => {
         donacion,
         nombre_informante,
         link_adjunto,
-        id_usuario,
         id_registro_discapacidad
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+        $1, $2, $3, $4, $5, $6, $7, $8, $9
       ) RETURNING id_registro_atencion;
     `;
 
@@ -506,7 +537,6 @@ const createRegistroAtencion = async (req, res) => {
       donacion,
       nombre_informante,
       link_adjunto,
-      id_usuario,
       id_registro_discapacidad
     ]);
 
@@ -589,7 +619,6 @@ const getRegistrosAtencionByDiscapacidad = async (req, res) => {
         donacion,
         nombre_informante,
         link_adjunto,
-        id_usuario,
         id_registro_discapacidad
       FROM public.REGISTRO_ATENCION_PCD
       WHERE id_registro_discapacidad = $1;
@@ -610,42 +639,7 @@ const getRegistrosAtencionByDiscapacidad = async (req, res) => {
     return res.status(500).json({ error: 'Error al obtener los registros de atención' });
   }
 };
-const getRegistrosAtencionByUsuario = async (req, res) => {
-  const { id_usuario } = req.params;
 
-  try {
-    const query = `
-      SELECT 
-        id_registro_atencion,
-        fecha_registro,
-        lugar_registro,
-        nombre_pcd,
-        atencion_realizada,
-        area_atencion,
-        donacion,
-        nombre_informante,
-        link_adjunto,
-        id_usuario,
-        id_registro_discapacidad
-      FROM public.REGISTRO_ATENCION_PCD
-      WHERE id_usuario = $1;
-    `;
-
-    const result = await pool.query(query, [id_usuario]);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'No se encontraron registros de atención para este ID de discapacidad' });
-    }
-
-    return res.json({
-      message: 'Registros de atención obtenidos exitosamente',
-      registros: result.rows
-    });
-  } catch (error) {
-    console.error('Error al obtener los registros de atención:', error);
-    return res.status(500).json({ error: 'Error al obtener los registros de atención' });
-  }
-};
 const getRegistrosAtencion = async (req, res) => {
   const { id_registro_atencion } = req.params;
 
@@ -680,7 +674,39 @@ const getRegistrosAtencion = async (req, res) => {
     return res.status(500).json({ error: 'Error al obtener los registros de atención' });
   }
 };
+const getAllRegistrosAtencion = async (req, res) => {
+  try {
+    const query = `
+      SELECT 
+        fecha_registro,
+        lugar_registro,
+        nombre_pcd,
+        atencion_realizada,
+        area_atencion,
+        donacion,
+        nombre_informante,
+        link_adjunto,
+        id_registro_discapacidad
+      FROM public.REGISTRO_ATENCION_PCD
+    `;
+
+    const result = await pool.query(query);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron registros de atención para este ID de discapacidad' });
+    }
+
+    return res.json({
+      message: 'Registro de atención obtenido exitosamente',
+      registros: result.rows
+    });
+  } catch (error) {
+    console.error('Error al obtener los registros de atención:', error);
+    return res.status(500).json({ error: 'Error al obtener los registros de atención' });
+  }
+};
 module.exports = {
+  uploadFile,
     checkDatabaseConnection,
     createRegistroPcd,
     updateRegistroPcd,
@@ -694,6 +720,6 @@ module.exports = {
     createRegistroAtencion,
     updateRegistroAtencion,
     getRegistrosAtencionByDiscapacidad,
-    getRegistrosAtencionByUsuario,
-    getRegistrosAtencion
+    getRegistrosAtencion,
+    getAllRegistrosAtencion
 }

@@ -1,6 +1,8 @@
 //import { showFilterModal, exportData } from './FilterModal.js';
 import { exportList } from './EstadistList.js';
 import {showUserModal} from "./modalUsuario.js";
+import { tablaFuncionario } from './reporteFuncionario.js';
+
 export function loadNav() {
   
   const navHtml = `
@@ -18,7 +20,7 @@ export function loadNav() {
           <a class="nav-link" href="#" id="filterData">Filtrar Datos</a>
         </li>
         <li class="nav-item"> 
-          <a class="nav-link" href="#" id="exportData">Estadistica</a>
+          <a class="nav-link" href="#" id="ReporteFuncionario">Reporte de Funcionario</a>
         </li>
         <li class="nav-item"> 
           <a class="nav-link" href="#" id="editData">Editando Registro</a>
@@ -42,17 +44,15 @@ export function loadNav() {
   const body = document.querySelector('body');
   body.insertAdjacentHTML('afterbegin', navHtml);
   document.getElementById('editData').style.display = 'none';
-  document.getElementById('exportData').style.display = 'none';
   document.getElementById('filterData').style.display = 'none';
+  document.getElementById('atrasHistoricoPaciente').style.display = 'none';
 
   document.getElementById('showProductForm').addEventListener('click', function() {
     document.getElementById('productForm').style.display = 'block';
     document.getElementById('dataList').style.display = 'none';
-    document.getElementById('download-csv').style.display = 'none';
-    /*document.getElementById('exportData').style.display = 'none';
-    document.getElementById('searchInput').style.display = 'none';
-    document.getElementById('filterData').style.display = 'none';
-    document.getElementById('showDataList').style.display = 'none';*/
+    document.getElementById('ReporteFuncionario').style.display = 'none';
+    document.getElementById('customFilters').style.display = 'none';
+    document.getElementById('listaFuncionario').style.display = 'none';
     document.getElementById('showDataList').style.display = 'none';
     const existingButton = document.getElementById('editButtonId'); 
     const saveButton = document.getElementById('saveButton');
@@ -67,21 +67,17 @@ export function loadNav() {
     document.getElementById('dataList').style.display = 'block';
     document.getElementById('showProductForm').style.display = 'block';
     document.getElementById('customFilters').style.display = 'block';
-    document.getElementById('download-csv').style.display = 'block';
     document.getElementById('productForm').style.display = 'none';
     document.getElementById('dataRegistro').style.display = 'none';
-    document.getElementById('exportData').style.display = 'none';
+    document.getElementById('ReporteFuncionario').style.display = 'block';
     document.getElementById('atrasHistoricoPaciente').style.display = 'none';
+    document.getElementById('listaFuncionario').style.display = 'none';
     //loadData(1, false);
   });
 
   
   document.getElementById('filterData').addEventListener('click', function() {
     showFilterModal(); // Esta función mostrará el modal de filtrado
-  });
-  document.getElementById('exportData').addEventListener('click', function() {
-    let data = exportData();
-    exportList(data) // Esta función mostrará el modal de filtrado
   });
 
   document.getElementById('userIcon').addEventListener('click', function() {
@@ -93,6 +89,11 @@ export function loadNav() {
     document.getElementById('atrasHistoricoPaciente').style.display = 'none';
     document.getElementById('listaAntencion').style.display = 'none';
 });
+  document.getElementById('ReporteFuncionario').addEventListener('click', function() {
+    document.getElementById('dataList').style.display = 'none';
+    document.getElementById('customFilters').style.display = 'none';
+    tablaFuncionario();
+  });
 }
 
 

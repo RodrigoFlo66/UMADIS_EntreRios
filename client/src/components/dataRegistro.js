@@ -4,6 +4,7 @@ import { tablaPaciente } from './atencionList.js';
 import { updateRegistro } from './updateData.js';
 
 export async function mostrarPerfil(id_registro_discapacidad) {
+    document.getElementById('ReporteFuncionario').style.display = 'none';
     document.getElementById('showProductForm').style.display = 'none';
     document.getElementById('customFilters').style.display = 'none';
     const container = document.getElementById("dataRegistro");
