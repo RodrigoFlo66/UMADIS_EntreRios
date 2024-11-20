@@ -22,8 +22,39 @@ export async function  updateAtencion(id_registro_atencion, id_registro_discapac
     document.getElementById('area_atencion').value = data.area_atencion || '';
     document.getElementById('donacion').value = data.donacion || '';
     document.getElementById('nombre_informante').value = data.nombre_informante || '';
-    document.getElementById('link_adjunto').value = data.link_adjunto || '';
-        
+    updateFileInputWithLink('link_adjunto', data.link_adjunto || '');
+      
+    // Actualiza el campo de entrada y muestra el enlace al archivo existente
+function updateFileInputWithLink(inputId, fileLink) {
+    const inputElement = document.getElementById(inputId);
+
+    // Verificar si el campo ya tiene un contenedor para el enlace
+    let linkContainer = document.getElementById(`${inputId}-link-container`);
+    if (!linkContainer) {
+        // Crear un contenedor para el enlace si no existe
+        linkContainer = document.createElement('div');
+        linkContainer.id = `${inputId}-link-container`;
+        linkContainer.className = 'mt-2';
+
+        // Insertar el contenedor después del campo de entrada
+        inputElement.parentNode.appendChild(linkContainer);
+    }
+
+    // Limpiar el contenedor del enlace
+    linkContainer.innerHTML = '';
+
+    // Agregar el enlace solo si hay un archivo existente
+    if (fileLink) {
+        const link = document.createElement('a');
+        link.href = fileLink;
+        link.target = '_blank'; // Abre en una nueva pestaña
+        link.textContent = 'Ver documento adjunto actual';
+        link.className = 'btn btn-link';
+
+        linkContainer.appendChild(link);
+    }
+}
+
     } catch (error) {
         console.error('Hubo un problema con la solicitud de actualización del registro:', error);
     }

@@ -48,6 +48,158 @@ const checkDatabaseConnection = async (req, res) => {
   }
 }
 
+const getEstadisticas = async (req, res) => {
+  try {
+    // Consulta SQL para obtener las estadísticas de los registros con permanencia 'PERMANECE'
+    const queryPermanencia = `
+      SELECT 
+        distrito_domicilio,
+        sexo,
+        CASE
+          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 1 AND 10 THEN '1-10'
+          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 11 AND 18 THEN '11-18'
+          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 19 AND 25 THEN '19-25'
+          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 26 AND 59 THEN '26-59'
+          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) >= 60 THEN '60+'
+          ELSE 'Desconocida'
+        END AS rango_edad,
+        grado_discapacidad,
+        tipo_discapacidad,
+        COUNT(*) AS total
+      FROM public.REGISTRO_PCD
+      WHERE permanencia = 'PERMANECE'
+      GROUP BY distrito_domicilio, sexo, rango_edad, grado_discapacidad, tipo_discapacidad
+      ORDER BY distrito_domicilio, sexo, rango_edad, grado_discapacidad, tipo_discapacidad;
+    `;
+    const resultPermanencia = await pool.query(queryPermanencia);
+
+    // Consulta SQL para obtener estadísticas de todos los registros (PERMANECE + CERRADO)
+    const queryTotal = `
+      SELECT distrito_domicilio, permanencia, COUNT(*) AS total
+      FROM public.REGISTRO_PCD
+      GROUP BY distrito_domicilio, permanencia
+      ORDER BY distrito_domicilio, permanencia;
+    `;
+    const resultTotal = await pool.query(queryTotal);
+
+    // Formatear los datos de permanencia
+    const data = {};
+    resultTotal.rows.forEach(row => {
+      const {distrito_domicilio, permanencia, total} = row;
+      if (!data[distrito_domicilio]) {
+        data[distrito_domicilio] = {
+          PERMANECE: 0,
+          CERRADO: 0,
+          VARON: 0,
+          MUJER: 0,
+          "1-10": 0,
+          "11-18": 0,
+          "19-25": 0,
+          "26-59": 0,
+          "60+": 0,
+          "MUY GRAVE": 0,
+          "GRAVE": 0,
+          "MODERADO": 0,
+          "LEVE": 0,
+          AUDITIVA: 0,
+          "FISICA MOTORA": 0,
+          INTELECTUAL: 0,
+          MULTIPLE: 0,
+          PSIQUICA: 0,
+          VISCERAL: 0,
+          VISUAL: 0,
+          RETRASO: 0,
+        };
+      }
+
+      if (permanencia) {
+        data[distrito_domicilio][permanencia] += parseInt(total);
+      }
+    });
+
+    // Sumar los datos de la consulta de permanencia 'PERMANECE'
+    resultPermanencia.rows.forEach(row => {
+      const { distrito_domicilio, sexo, rango_edad, grado_discapacidad, tipo_discapacidad, total } = row;
+      
+      // Verificar si ya existe el distrito
+      if (!data[distrito_domicilio]) {
+        data[distrito_domicilio] = {
+          PERMANECE: 0,
+          CERRADO: 0,
+          VARON: 0,
+          MUJER: 0,
+          "1-10": 0,
+          "11-18": 0,
+          "19-25": 0,
+          "26-59": 0,
+          "60+": 0,
+          "MUY GRAVE": 0,
+          "GRAVE": 0,
+          "MODERADO": 0,
+          "LEVE": 0,
+          AUDITIVA: 0,
+          "FISICA MOTORA": 0,
+          INTELECTUAL: 0,
+          MULTIPLE: 0,
+          PSIQUICA: 0,
+          VISCERAL: 0,
+          VISUAL: 0,
+          RETRASO: 0,
+        };
+      }
+
+      // Contar según los atributos
+      if (sexo) {
+        data[distrito_domicilio][sexo] += parseInt(total);
+      }
+
+      if (rango_edad) {
+        data[distrito_domicilio][rango_edad] += parseInt(total);
+      }
+
+      if (grado_discapacidad) {
+        data[distrito_domicilio][grado_discapacidad] += parseInt(total);
+      }
+
+      if (tipo_discapacidad) {
+        data[distrito_domicilio][tipo_discapacidad] += parseInt(total);
+      }
+    });
+
+    // Convertir los datos en filas para Tabulator
+    const rows = [
+      { atributo: "PERMANECE", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.PERMANECE])) },
+      { atributo: "CERRADO", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.CERRADO])) },
+      { atributo: "VARON", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.VARON])) },
+      { atributo: "MUJER", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.MUJER])) },
+      { atributo: "1-10", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["1-10"]])) },
+      { atributo: "11-18", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["11-18"]])) },
+      { atributo: "19-25", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["19-25"]])) },
+      { atributo: "26-59", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["26-59"]])) },
+      { atributo: "60+", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["60+"]])) },
+      { atributo: "MUY GRAVE", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["MUY GRAVE"]])) },
+      { atributo: "GRAVE", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["GRAVE"]])) },
+      { atributo: "MODERADO", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["MODERADO"]])) },
+      { atributo: "LEVE", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["LEVE"]])) },
+      { atributo: "AUDITIVA", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.AUDITIVA])) },
+      { atributo: "FISICA MOTORA", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["FISICA MOTORA"]])) },
+      { atributo: "INTELECTUAL", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.INTELECTUAL])) },
+      { atributo: "MULTIPLE", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.MULTIPLE])) },
+      { atributo: "PSIQUICA", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.PSIQUICA])) },
+      { atributo: "VISCERAL", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.VISCERAL])) },
+      { atributo: "VISUAL", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.VISUAL])) },
+      { atributo: "RETRASO", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.RETRASO])) },
+    ];
+
+    res.json(rows);
+  } catch (err) {
+    console.error("Error al obtener las estadísticas:", err);
+    res.status(500).json({ error: "Hubo un error al obtener los datos." });
+  }
+};
+
+
+
 //REGISTRO_PCD//
 const getRegistroById = async (req, res) => {
   const { id_registro_discapacidad } = req.params;
@@ -721,5 +873,6 @@ module.exports = {
     updateRegistroAtencion,
     getRegistrosAtencionByDiscapacidad,
     getRegistrosAtencion,
-    getAllRegistrosAtencion
+    getAllRegistrosAtencion,
+    getEstadisticas
 }

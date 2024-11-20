@@ -17,11 +17,13 @@ const {
     getRegistrosAtencionByDiscapacidad,
     getRegistrosAtencion,
     getAllRegistrosAtencion,
-    uploadFile
+    uploadFile,
+    getEstadisticas
 } = require("../controllers/data.controllers");
 
 router.post("/api/upload", uploadFile);
 router.get("/check", checkDatabaseConnection);
+router.get("/estadisticas", getEstadisticas);
 router.post("/registro-pcd/:id_municipio", createRegistroPcd);
 router.put("/registro-pcd/:id_registro_discapacidad", updateRegistroPcd);
 router.get("/registro-pcd/:id_registro_discapacidad", getRegistroById);

@@ -48,6 +48,18 @@ export async function tablaFuncionario() {
             mutator: (value) => value ? value.split('T')[0] : 'N/A' 
         },
         { title: "Lugar", field: "lugar_registro", headerFilter: "input" },
+        {
+            title: "Adjunto",
+            field: "link_adjunto",
+            formatter: function (cell, formatterParams, onRendered) {
+                const link = cell.getValue();
+                if (link) {
+                    return `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">Ver Documento</a>`;
+                } else {
+                    return "No disponible";
+                }
+            },
+        }
     ];
     
     // Paso 2: Inicialización de la tabla con todas las opciones, incluida la paginación

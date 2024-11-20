@@ -3,22 +3,27 @@ import { serverUrl } from '../server.config.js';
 import {createInputWithLabel, createSelectWithLabel} from './dataForm.js';
 import { mostrarPerfil } from './dataRegistro.js';
  let linkAdjunto;
-function handleFileUpload(event) {
+ function handleFileUpload(event, linkContainer, statusMessage) {
   const file = event.target.files[0];
 
   if (file) {
-      // Validar que el archivo sea un PDF
-      if (file.type !== "application/pdf") {
-          alert("Por favor, selecciona un archivo PDF.");
-          event.target.value = ""; // Resetear el campo
-          return;
-      }
+    // Validar que el archivo sea un PDF
+    if (file.type !== "application/pdf") {
+      alert("Por favor, selecciona un archivo PDF.");
+      event.target.value = ""; // Resetear el campo
+      return;
+    }
+    document.getElementById('link_adjunto-link-container').innerHTML = '';
+    // Mostrar mensaje de subida en curso
+    statusMessage.style.display = 'block';
+    statusMessage.textContent = 'Subiendo archivo, por favor espera...';
 
-      // Subir el archivo al servidor
-      uploadFileToServer(file);
+    // Subir el archivo al servidor
+    uploadFileToServer(file, linkContainer, statusMessage);
   }
 }
-async function uploadFileToServer(file) {
+
+async function uploadFileToServer(file, linkContainer, statusMessage) {
   // Crear un objeto FormData para enviar el archivo
   const formData = new FormData();
   formData.append('file', file);
@@ -37,22 +42,38 @@ async function uploadFileToServer(file) {
 
       // Parsear la respuesta como JSON
       const data = await response.json();
-
+      
       // Verificar si el servidor devuelve un enlace
       if (data.link) {
-          console.log('Archivo subido exitosamente:', data.link);
+          
           // Aquí puedes guardar el enlace en tu base de datos o usarlo como necesites
           linkAdjunto = data.link; // Implementa esta función según sea necesario
+          console.log(linkAdjunto);
+          // Actualizar el enlace al archivo subido
+    linkContainer.innerHTML = '';
+    const link = document.createElement('a');
+    link.href = data.link;
+    link.target = '_blank';
+    link.textContent = 'Ver documento adjunto subido';
+    link.className = 'btn btn-link';
+    linkContainer.appendChild(link);
+
+    // Mostrar mensaje de éxito
+    statusMessage.textContent = 'Archivo subido correctamente.';
+    statusMessage.className = 'text-success mt-2';
       } else {
-          alert('El servidor no devolvió un enlace. Intenta nuevamente.');
+        statusMessage.textContent = 'Error al subir el archivo.';
+        statusMessage.className = 'text-danger mt-2';
+        console.error('Error al subir el archivo:', error);
       }
   } catch (error) {
-      console.error('Error al subir el archivo:', error);
-      alert('Hubo un problema al subir el archivo. Intenta nuevamente.');
+    statusMessage.textContent = 'Error al subir el archivo.';
+    statusMessage.className = 'text-danger mt-2';
+    console.error('Error al subir el archivo:', error);
   }
 }
 // Función para crear el campo de archivo
-function createFileInputWithLabel(id, labelText) {
+function createFileInputWithLabel(id, labelText, existingFileLink = null) {
   const container = document.createElement('div');
   container.className = 'form-group mb-3';
 
@@ -68,14 +89,38 @@ function createFileInputWithLabel(id, labelText) {
   input.className = 'form-control';
   input.accept = 'application/pdf'; // Solo permite archivos PDF
 
-  // Escuchar cambios en el archivo para validar y manejar la subida
-  input.addEventListener('change', handleFileUpload);
+  // Contenedor para mostrar el enlace al archivo existente (si lo hay)
+  const linkContainer = document.createElement('div');
+  linkContainer.className = 'mt-2';
+
+  if (existingFileLink) {
+    const link = document.createElement('a');
+    link.href = existingFileLink;
+    link.target = '_blank'; // Abre el enlace en una nueva pestaña
+    link.textContent = 'Ver documento adjunto actual';
+    link.className = 'btn btn-link';
+    linkContainer.appendChild(link);
+  }
+
+  // Indicador de estado (subiendo, éxito, error)
+  const statusMessage = document.createElement('div');
+  statusMessage.className = 'text-muted mt-2';
+  statusMessage.style.display = 'none'; // Ocultar por defecto
 
   container.appendChild(label);
   container.appendChild(input);
+  container.appendChild(linkContainer);
+  container.appendChild(statusMessage);
+
+  // Escuchar cambios en el archivo para validar y manejar la subida
+  input.addEventListener('change', (event) => {
+    handleFileUpload(event, linkContainer, statusMessage);
+  });
 
   return container;
 }
+
+
 const form = document.createElement('form');
 // Crear el formulario
 form.id = 'miFormAtencion';

@@ -1,102 +1,86 @@
-export async function exportList(data) {
-    // Calcular estadísticas
-    const stats = {
-        genero: { MASCULINO: 0, FEMENINO: 0 },
-        estudia: { SI: 0, NO: 0 },
-        trabaja: { SI: 0, NO: 0 },
-        grado_academico: {},
-        tipo_discapacidad: {},
-        grado_discapacidad: {}
-    };
+import { serverUrl } from '../server.config.js';
+import * as Tabulator from '../../node_modules/tabulator-tables/dist/js/tabulator_esm.js';
+export async function exportList() {
+    document.getElementById('listaEstadistica').style.display = 'block';
+    const mainContainer = document.getElementById("listaEstadistica"); // Asegúrate de tener este contenedor en tu HTML
+    mainContainer.innerHTML = ""; // Limpia el contenido anterior
+    // Crear y agregar el título
+    const profileTitle = document.createElement("h2");
+    profileTitle.textContent = "ESTADISTICA DE REGISTROS";
+    profileTitle.className = "text-center text-primary mb-4";
+    mainContainer.appendChild(profileTitle);
+    // Contenedor específico para la tabla
+    const tableContainer = document.createElement("div");
+    tableContainer.id = "estadisticaList";
+    mainContainer.appendChild(tableContainer);
+    // Paso 1: Cargar datos de la API o fuente de datos
+    const response = await fetch(`${serverUrl}/estadisticas`);
+const data = await response.json();
 
-    data.forEach(item => {
-        if (item.genero) stats.genero[item.genero] = (stats.genero[item.genero] || 0) + 1;
-        if (item.estudia) stats.estudia[item.estudia] = (stats.estudia[item.estudia] || 0) + 1;
-        if (item.trabaja) stats.trabaja[item.trabaja] = (stats.trabaja[item.trabaja] || 0) + 1;
-        if (item.grado_academico) stats.grado_academico[item.grado_academico] = (stats.grado_academico[item.grado_academico] || 0) + 1;
-        if (item.tipo_discapacidad) stats.tipo_discapacidad[item.tipo_discapacidad] = (stats.tipo_discapacidad[item.tipo_discapacidad] || 0) + 1;
-        if (item.grado_discapacidad) stats.grado_discapacidad[item.grado_discapacidad] = (stats.grado_discapacidad[item.grado_discapacidad] || 0) + 1;
+// Configuración de la localización en español
+const spanishLocale = {
+    "pagination": {
+        "first": "Primero",
+        "first_title": "Primera Página",
+        "last": "Último",
+        "last_title": "Última Página",
+        "prev": "Anterior",
+        "prev_title": "Página Anterior",
+        "next": "Siguiente",
+        "next_title": "Página Siguiente",
+    }
+};
+
+// Aquí generamos las columnas dinámicamente a partir de la respuesta
+const generateColumns = (data) => {
+    // Tomamos los distritos (las claves de cada objeto)
+    const districts = Object.keys(data[0]).filter(key => key !== "atributo");
+    
+    // Creamos las columnas para cada distrito
+    const columns = [
+        { title: "Atributo", field: "atributo"},
+        ...districts.map(district => ({
+            title: district,
+            field: district,
+            hozAlign: "center",
+        })),
+    ];
+
+    return columns;
+};
+
+// Preparamos los datos para Tabulator
+const tableData = data.map(row => {
+    const rowData = { atributo: row.atributo };
+    Object.keys(row).forEach(key => {
+        if (key !== "atributo") {
+            rowData[key] = row[key];
+        }
     });
-     // Eliminar el modal existente si hay alguno
-     const existingModal = document.getElementById('statsModal');
-     if (existingModal) {
-         existingModal.remove();
-     }
-    // Crear el HTML del modal
-    const modalHtml = `
-        <!-- Modal -->
-        <div class="modal fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-md"> <!-- Cambiado a modal-md para un tamaño mediano -->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="statsModalLabel">Estadísticas de los Registros</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Aquí se insertarán las estadísticas -->
-                        <div class="container">
-                            <div class="row" id="statsModalContentRow">
-                                <!-- Las columnas se añadirán dinámicamente aquí -->
-                                ${generateStatsHtml(stats)}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
+    return rowData;
+});
 
-    // Insertar el HTML del modal en el cuerpo del documento    
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
+// Inicialización de la tabla
+const table = new Tabulator.TabulatorFull(tableContainer, {
+    data: tableData,
+    layout: "fitColumns",
+    placeholder: "Cargando datos...",
+    pagination: "local",
+    paginationSize: 15,
+    locale: true,
+    langs: {
+        "es": spanishLocale,
+    },
+    initialLocale: "es", // Establece el idioma inicial a español
+    columns: generateColumns(data)  // Generamos las columnas dinámicamente
+});
 
-    // Mostrar el modal
-    $('#statsModal').modal('show');
+    /*// Configura la exportación al hacer clic en el botón
+    document.getElementById("exportFuncionarioList").addEventListener("click", () => {
+        table.download("csv", "Reporte_Historico.csv", {
+            delimiter: ",", // Cambia el delimitador si necesitas otro
+            bom: true       // Incluye BOM para compatibilidad UTF-8
+        });
+    });*/
 }
 
-// Función para generar el HTML de las estadísticas
-function generateStatsHtml(stats) {
-    let html = '';
-
-    html += '<div class="col-12"><h6>Género</h6>';
-    Object.keys(stats.genero).forEach(key => {
-        html += `<p>${key}: ${stats.genero[key]}</p>`;
-    });
-    html += '</div>';
-
-    html += '<div class="col-12"><h6>Estudia</h6>';
-    Object.keys(stats.estudia).forEach(key => {
-        html += `<p>${key}: ${stats.estudia[key]}</p>`;
-    });
-    html += '</div>';
-
-    html += '<div class="col-12"><h6>Trabaja</h6>';
-    Object.keys(stats.trabaja).forEach(key => {
-        html += `<p>${key}: ${stats.trabaja[key]}</p>`;
-    });
-    html += '</div>';
-
-    html += '<div class="col-12"><h6>Grado Académico</h6>';
-    Object.keys(stats.grado_academico).forEach(key => {
-        html += `<p>${key}: ${stats.grado_academico[key]}</p>`;
-    });
-    html += '</div>';
-
-    html += '<div class="col-12"><h6>Tipo de Discapacidad</h6>';
-    Object.keys(stats.tipo_discapacidad).forEach(key => {
-        html += `<p>${key}: ${stats.tipo_discapacidad[key]}</p>`;
-    });
-    html += '</div>';
-
-    html += '<div class="col-12"><h6>Grado de Discapacidad</h6>';
-    Object.keys(stats.grado_discapacidad).forEach(key => {
-        html += `<p>${key}: ${stats.grado_discapacidad[key]}</p>`;
-    });
-    html += '</div>';
-
-    return html;
-}

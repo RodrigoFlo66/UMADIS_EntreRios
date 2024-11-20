@@ -52,7 +52,20 @@ export async function tablaPaciente(id_registro_discapacidad) {
             mutator: (value) => value ? value.split('T')[0] : 'N/A' 
         },
         { title: "Lugar", field: "lugar_registro", headerFilter: "input" },
-        { title: "Informante", field: "nombre_informante", headerFilter: "input" }
+        { title: "Informante", field: "nombre_informante", headerFilter: "input" },
+        {
+            title: "Adjunto",
+            field: "link_adjunto",
+            formatter: function (cell, formatterParams, onRendered) {
+                const link = cell.getValue();
+                if (link) {
+                    return `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">Ver Documento</a>`;
+                } else {
+                    return "No disponible";
+                }
+            },
+        }
+                 
     ];
     
     // Paso 2: Inicialización de la tabla con todas las opciones, incluida la paginación
@@ -144,3 +157,4 @@ mainContainer.appendChild(filtersBar);
     // Asegurarse de que la barra de filtros esté visible
     filtersBar.style.display = 'block';
 }
+
