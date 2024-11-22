@@ -117,12 +117,12 @@ export async function tablaPaciente(id_registro_discapacidad) {
         });
 /////////////////////////////////////////////////////////
     // Configura la exportación al hacer clic en el botón
-   /* document.getElementById("download-csv").addEventListener("click", () => {
-        table.download("csv", "data.csv", {
+   document.getElementById("exportAtencionList").addEventListener("click", () => {
+        table.download("csv", "Reporte hitorico de paciente.csv", {
             delimiter: ",", // Cambia el delimitador si necesitas otro
             bom: true       // Incluye BOM para compatibilidad UTF-8
         });
-    });*/
+    });
     
     
     // Añade el evento de clic en las filas después de la configuración completa
@@ -150,6 +150,8 @@ function filterTable(mainContainer) {
             </div>
         
     <button id="clearDatesButton" class="btn btn-warning" style="white-space: nowrap;">Limpiar Fechas</button>
+    <button id="exportAtencionList" class="btn btn-success" style="white-space: nowrap;">Exportar todo</button>
+    <button id="exportFiltroA" class="btn btn-primary" style="white-space: nowrap;">Exportar filtro</button>
     </div>
 
     `;

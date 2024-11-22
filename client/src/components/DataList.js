@@ -126,7 +126,7 @@ export async function initializeTable() {
 /////////////////////////////////////////////////////////
     // Configura la exportación al hacer clic en el botón
     document.getElementById("printAllButton").addEventListener("click", () => {
-        table.download("csv", "data.csv", {
+        table.download("csv", "Lista de registros.csv", {
             delimiter: ",", // Cambia el delimitador si necesitas otro
             bom: true       // Incluye BOM para compatibilidad UTF-8
         });
@@ -138,6 +138,7 @@ export async function initializeTable() {
         const data = row.getData();
         const idRegistro = data.id_registro_discapacidad; 
         document.getElementById('dataRegistro').style.display = 'block';
+        document.getElementById('estadistica').style.display = 'none';
         document.getElementById('dataList').style.display = 'none';
         mostrarPerfil(idRegistro); 
     });

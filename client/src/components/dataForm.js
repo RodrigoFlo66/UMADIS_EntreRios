@@ -304,6 +304,7 @@ clearButton.addEventListener('click', function() {
       document.getElementById('editData').style.display = 'none';
       document.getElementById('ReporteFuncionario').style.display = 'block';
       document.getElementById('customFilters').style.display = 'block';
+      document.getElementById('estadistica').style.display = 'block';
     });
   });
 
@@ -392,6 +393,7 @@ saveButton.addEventListener('click', async function(e) {
        document.getElementById('showDataList').style.display = 'block';
        document.getElementById('ReporteFuncionario').style.display = 'block';
       document.getElementById('customFilters').style.display = 'block';
+      document.getElementById('estadistica').style.display = 'block';
   
        initializeTable();
        const messageDiv = document.getElementById('message');

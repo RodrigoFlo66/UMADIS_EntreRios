@@ -13,7 +13,10 @@ import { mostrarPerfil } from './dataRegistro.js';
       event.target.value = ""; // Resetear el campo
       return;
     }
-    document.getElementById('link_adjunto-link-container').innerHTML = '';
+    const link = document.getElementById('link_adjunto-link-container');
+    if (link) {
+      link.innerHTML = '';
+    }
     // Mostrar mensaje de subida en curso
     statusMessage.style.display = 'block';
     statusMessage.textContent = 'Subiendo archivo, por favor espera...';

@@ -53,6 +53,8 @@ export function loadNav() {
     document.getElementById('customFilters').style.display = 'none';
     document.getElementById('listaFuncionario').style.display = 'none';
     document.getElementById('showDataList').style.display = 'none';
+    document.getElementById('listaEstadistica').style.display = 'none';
+    document.getElementById('estadistica').style.display = 'none';
     const existingButton = document.getElementById('editButtonId'); 
     const saveButton = document.getElementById('saveButton');
 
@@ -72,6 +74,7 @@ export function loadNav() {
     document.getElementById('atrasHistoricoPaciente').style.display = 'none';
     document.getElementById('listaFuncionario').style.display = 'none';
     document.getElementById('listaEstadistica').style.display = 'none';
+    document.getElementById('estadistica').style.display = 'block';
     //loadData(1, false);
   });
 
@@ -79,6 +82,7 @@ export function loadNav() {
   document.getElementById('estadistica').addEventListener('click', function() {
     document.getElementById('dataList').style.display = 'none';
     document.getElementById('customFilters').style.display = 'none';
+    document.getElementById('listaFuncionario').style.display = 'none';
     exportList(); // Esta función mostrará el modal de filtrado
   });
 
@@ -94,6 +98,7 @@ export function loadNav() {
   document.getElementById('ReporteFuncionario').addEventListener('click', function() {
     document.getElementById('dataList').style.display = 'none';
     document.getElementById('customFilters').style.display = 'none';
+    document.getElementById('listaEstadistica').style.display = 'none';
     tablaFuncionario();
   });
 }

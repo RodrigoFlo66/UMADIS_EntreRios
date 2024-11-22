@@ -127,8 +127,8 @@ export async function  updateRegistro(id_registro_discapacidad) {
             document.getElementById('showProductForm').style.display = 'block';
             document.getElementById('productForm').style.display = 'none';
             document.getElementById('editData').style.display = 'none';
-            document.getElementById('filterData').style.display = 'none';
             document.getElementById('ReporteFuncionario').style.display = 'block';
+            document.getElementById('estadistica').style.display = 'block';
             initializeTable();
                 // Muestra un mensaje de éxito
             
