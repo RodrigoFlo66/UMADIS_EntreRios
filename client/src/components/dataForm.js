@@ -221,7 +221,8 @@ const nivelEscolaridad = createSelectWithLabel('nivel_escolaridad', [
       { value: 'PRIMARIA', text: 'PRIMARIA' },
       { value: 'SECUNDARIA', text: 'SECUNDARIA' },
       { value: 'TECNICO', text: 'TECNICO' },
-      { value: 'UNIVERSITARIO', text: 'UNIVERSITARIO' }
+      { value: 'UNIVERSITARIO', text: 'UNIVERSITARIO' },
+      { value: 'ESPECIAL', text: 'ESPECIAL' }
   ], 'Nivel de escolaridad', false);
   leftHalf.appendChild(nivelEscolaridad);
   const infoVivienda = createSelectWithLabel('info_vivienda', [
@@ -230,7 +231,7 @@ const nivelEscolaridad = createSelectWithLabel('nivel_escolaridad', [
       { value: 'VIVIENDA PROPIA CON APOYO 100%', text: 'VIVIENDA PROPIA CON APOYO 100%' },
       { value: 'VIVIENDA PROPIA CON CONTRAPARTE', text: 'VIVIENDA PROPIA CON CONTRAPARTE' }
   ], 'Informacion de vivienda', false);
-  rightHalf.appendChild(infoVivienda);
+  leftHalf.appendChild(infoVivienda);
   const infoLaboral = createSelectWithLabel('info_laboral', [
     { value: '', text: 'Seleccione una opción' },
       { value: 'SIN TRABAJO', text: 'SIN TRABAJO' },
@@ -239,10 +240,12 @@ const nivelEscolaridad = createSelectWithLabel('nivel_escolaridad', [
   ], 'Informacion laboral', false);
   rightHalf.appendChild(infoLaboral);
 //DATOS FAMILIARES//
-const nombreFamiliar = createInputWithLabel('nombre_familiar', 'text', "", "Nombre de familiar", false);
+const nombreFamiliar = createInputWithLabel('nombre_familiar', 'text', "", "Nombre de padres o familiares", false);
   rightHalf.appendChild(nombreFamiliar);
   const numHijos = createInputWithLabel('nro_hijos_pcd', 'number', "", "Numero de hijos de PcD", false);
   rightHalf.appendChild(numHijos);
+  const numHermanos = createInputWithLabel('numero_hermanos_pcd', 'number', "", "Numero de hermanos ded PcD", false);
+  rightHalf.appendChild(numHermanos);
   const conyuge = createInputWithLabel('conyuge_pcd', 'text', "", "Conyuge de PcD", false);
   rightHalf.appendChild(conyuge);
   //DATOS DE CONTACTO//
@@ -270,7 +273,15 @@ const nombreFamiliar = createInputWithLabel('nombre_familiar', 'text', "", "Nomb
   rightHalf.appendChild(permanencia);
   const motivoCierre = createInputWithLabel('motivo_cierre', 'text', "", "Motivo de Cierre", false);
   rightHalf.appendChild(motivoCierre);
-  
+  const afiliacion = createSelectWithLabel('afiliacion_opcd', [
+    { value: '', text: 'Seleccione una opción' },
+      { value: 'BULO BULO', text: 'BULO BULO' },
+      { value: 'ENTRE RIOS', text: 'ENTRE RIOS'},
+      { value: 'NINGUNO', text: 'NINGUNO'}
+    ], 'Afiliación a una OPcD', false);
+  rightHalf.appendChild(afiliacion);
+  const fuenteInfo = createInputWithLabel('fuente_informacion', 'text', "", "Fuente de Información", false);
+  rightHalf.appendChild(fuenteInfo);
   
 // Añadir las mitades al formulario
 form.appendChild(leftHalf);
@@ -370,7 +381,8 @@ saveButton.addEventListener('click', async function(e) {
     }
 
     const formData = getFromData();
-    console.log(formData.permanencia);
+    console.log(formData);
+    
     // Enviar los datos con fetch a tu backend
     try{ 
       const response = await fetch(`${serverUrl}/registro-pcd/${id_municipio}`, {
@@ -449,7 +461,10 @@ export function getFromData() {
     telefono_pdc: getIntValue('telefono_pcd'),
     telefono_referencia: getIntValue('telefono_referencia'),
     permanencia: document.getElementById('permanenciaForm').value,
-    motivo_cierre: document.getElementById('motivo_cierre').value
+    motivo_cierre: document.getElementById('motivo_cierre').value,
+    numero_hermanos_pcd: document.getElementById('numero_hermanos_pcd').value,
+    afiliacion_opcd: document.getElementById('afiliacion_opcd').value,
+    fuente_informacion: document.getElementById('fuente_informacion').value,
 };
 return formData;
 }

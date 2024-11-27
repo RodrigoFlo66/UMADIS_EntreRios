@@ -40,6 +40,9 @@ export async function  updateRegistro(id_registro_discapacidad) {
         document.getElementById('telefono_referencia').value = data.telefono_referencia || '';
         document.getElementById('permanenciaForm').value = data.permanencia || '';
         document.getElementById('motivo_cierre').value = data.motivo_cierre || '';
+        document.getElementById('numero_hermanos_pcd').value = data.numero_hermanos_pcd || '';
+        document.getElementById('afiliacion_opcd').value = data.afiliacion_opcd || '';
+        document.getElementById('fuente_informacion').value = data.fuente_informacion || '';
     } catch (error) {
         console.error('Hubo un problema con la solicitud de actualización del registro:', error);
     }

@@ -41,6 +41,9 @@ CREATE TABLE public.REGISTRO_PCD (
     telefono_referencia VARCHAR(20), 
     permanencia VARCHAR(20),
     motivo_cierre VARCHAR(100),
+    numero_hermanos_pcd INTEGER,
+    afiliacion_opcd VARCHAR(100),
+    fuente_informacion VARCHAR(255),
     id_municipio INTEGER NOT NULL,
     CONSTRAINT municipio_registro_pcd_fk FOREIGN KEY (id_municipio)
         REFERENCES public.MUNICIPIO (id_municipio)

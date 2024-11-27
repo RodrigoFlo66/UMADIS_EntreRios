@@ -49,7 +49,8 @@ export async function initializeTable() {
         { title: "Edad", field: "edad", headerFilter: "input" },
         { title: "Tipo de Discapacidad", field: "tipo_discapacidad", headerFilter: "input" },
         { title: "Grado de Discapacidad", field: "grado_discapacidad", headerFilter: "input" },
-        { title: "Teléfono", field: "telefono_pdc", headerFilter: "input" }
+        { title: "Teléfono", field: "telefono_pdc", headerFilter: "input" },
+        { title: "Número de CI", field: "nro_ci", headerFilter: "input" }
     ];
     const closedColumns = [
         { formatter: "rownum", width: 40 },
@@ -79,6 +80,8 @@ export async function initializeTable() {
         const disabilityTypeSelect = document.getElementById("estadoCivilF"); // Suponiendo que tienes un select para el tipo de discapacidad 
         const filtroSexo = document.getElementById("sexoFiltro");
         const filtroNivelEscolaridad = document.getElementById("nivelEscolaridadF");
+        const filtroVivienda = document.getElementById("viviendaFiltro");
+        const filtroLaboral = document.getElementById("laboralFiltro");
         const permanenciaSelect = document.getElementById("permanenciaL"); // Suponiendo que tienes un select para la permanencia  
         // Escuchar los cambios en el tipo de discapacidad
         disabilityTypeSelect.addEventListener("change", () => {
@@ -103,6 +106,22 @@ export async function initializeTable() {
                 table.setFilter("nivel_escolaridad", "=", typeValue); // Filtrar las filas por el tipo de discapacidad
             } else {
                 table.clearFilter("nivel_escolaridad"); // Quitar filtro si no hay selección
+            }
+        });
+        filtroVivienda.addEventListener("change", () => {
+            const typeValue = filtroVivienda.value;
+            if (typeValue) {
+                table.setFilter("info_vivienda", "=", typeValue); // Filtrar las filas por el tipo de discapacidad
+            } else {
+                table.clearFilter("info_vivienda"); // Quitar filtro si no hay selección
+            }
+        });
+        filtroLaboral.addEventListener("change", () => {
+            const typeValue = filtroLaboral.value;
+            if (typeValue) {
+                table.setFilter("info_laboral", "=", typeValue); // Filtrar las filas por el tipo de discapacidad
+            } else {
+                table.clearFilter("info_laboral"); // Quitar filtro si no hay selección
             }
         });
         permanenciaSelect.addEventListener("change", (event) => {
@@ -160,7 +179,26 @@ function filterTable() {
             <option value="CERRADO">Cerrado</option>
         </select>
     </div>
-
+    <!-- Filtro de Vivienda -->
+    <div class="d-flex align-items-center">
+        <label for="viviendaFiltro" class="form-label me-2 mb-0" style="white-space: nowrap;">Información de Vivienda:</label>
+        <select id="viviendaFiltro" class="form-select" style="width: auto;">
+            <option value="">Todos</option>
+            <option value="NO TIENE VIVIENDA PROPIA">NO TIENE VIVIENDA PROPIA</option>
+            <option value="VIVIENDA PROPIA CON APOYO 100%">VIVIENDA PROPIA CON APOYO 100%</option>
+            <option value="VIVIENDA PROPIA CON CONTRAPARTE">VIVIENDA PROPIA CON CONTRAPARTE</option>
+        </select>
+    </div>
+    <!-- Filtro de info laboral -->
+    <div class="d-flex align-items-center">
+        <label for="laboralFiltro" class="form-label me-2 mb-0" style="white-space: nowrap;">Información Laboral:</label>
+        <select id="laboralFiltro" class="form-select" style="width: auto;">
+            <option value="">Todos</option>
+            <option value="SIN TRABAJO">SIN TRABAJO</option>
+            <option value="TRABAJO POR CUENTA PROPIA">TRABAJO POR CUENTA PROPIA</option>
+            <option value="TRABAJO REMUNERADO">TRABAJO REMUNERADO</option>
+        </select>
+    </div>
     <!-- Filtro de estado civil -->
     <div class="d-flex align-items-center">
         <label for="estadoCivilF" class="form-label me-2 mb-0" style="white-space: nowrap;">Estado civil:</label>
@@ -190,13 +228,15 @@ function filterTable() {
         <select id="nivelEscolaridadF" class="form-select" style="width: auto;">
             <option value="">Todos</option>
             <option value="NINGUNO">NINGUNO</option>
+            <option value="INICIAL">INICIAL</option>
             <option value="PRIMARIA">PRIMARIA</option>
             <option value="SECUNDARIA">SECUNDARIA</option>
             <option value="TECNICO">TECNICO</option>
             <option value="UNIVERSITARIO">UNIVERSITARIO</option>
+            <option value="ESPECIAL">ESPECIAL</option>
         </select>
     </div>
-
+    
     <!-- Botones -->
     <div class="d-flex align-items-center ">
         <button id="printAllButton" class="btn btn-success me-2">Exportar Todo</button>

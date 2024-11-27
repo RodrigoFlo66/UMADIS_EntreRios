@@ -7,7 +7,7 @@ export function loadNav() {
   
   const navHtml = `
   <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top" id="navApp">
-    <a class="navbar-brand ms-3" href="#" id="showDataList"><i class="fas fa-home"></i> INICIO</a>
+    <a class="navbar-brand ms-4" href="#" id="showDataList"><i class="fas fa-home"></i> INICIO</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

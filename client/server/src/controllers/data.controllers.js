@@ -56,10 +56,11 @@ const getEstadisticas = async (req, res) => {
         distrito_domicilio,
         sexo,
         CASE
-          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 1 AND 10 THEN '1-10'
-          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 11 AND 18 THEN '11-18'
-          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 19 AND 25 THEN '19-25'
-          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 26 AND 59 THEN '26-59'
+          WHEN fecha_nacimiento IS NULL THEN 'Desconocida'
+          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 0 AND 5 THEN '0-5'
+          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 6 AND 18 THEN '6-18'
+          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 19 AND 30 THEN '19-30'
+          WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) BETWEEN 31 AND 59 THEN '31-59'
           WHEN EXTRACT(YEAR FROM AGE(fecha_nacimiento)) >= 60 THEN '60+'
           ELSE 'Desconocida'
         END AS rango_edad,
@@ -92,10 +93,10 @@ const getEstadisticas = async (req, res) => {
           CERRADO: 0,
           VARON: 0,
           MUJER: 0,
-          "1-10": 0,
-          "11-18": 0,
-          "19-25": 0,
-          "26-59": 0,
+          "0-5": 0,
+          "6-18": 0,
+          "19-30": 0,
+          "31-59": 0,
           "60+": 0,
           "MUY GRAVE": 0,
           "GRAVE": 0,
@@ -128,10 +129,10 @@ const getEstadisticas = async (req, res) => {
           CERRADO: 0,
           VARON: 0,
           MUJER: 0,
-          "1-10": 0,
-          "11-18": 0,
-          "19-25": 0,
-          "26-59": 0,
+          "0-5": 0,
+          "6-18": 0,
+          "19-30": 0,
+          "31-59": 0,
           "60+": 0,
           "MUY GRAVE": 0,
           "GRAVE": 0,
@@ -172,10 +173,10 @@ const getEstadisticas = async (req, res) => {
       { atributo: "CERRADO", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.CERRADO])) },
       { atributo: "VARON", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.VARON])) },
       { atributo: "MUJER", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores.MUJER])) },
-      { atributo: "1-10", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["1-10"]])) },
-      { atributo: "11-18", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["11-18"]])) },
-      { atributo: "19-25", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["19-25"]])) },
-      { atributo: "26-59", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["26-59"]])) },
+      { atributo: "0-5", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["0-5"]])) },
+      { atributo: "6-18", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["6-18"]])) },
+      { atributo: "19-30", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["19-30"]])) },
+      { atributo: "31-59", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["31-59"]])) },
       { atributo: "60+", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["60+"]])) },
       { atributo: "MUY GRAVE", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["MUY GRAVE"]])) },
       { atributo: "GRAVE", ...Object.fromEntries(Object.entries(data).map(([distrito, valores]) => [distrito, valores["GRAVE"]])) },
@@ -231,6 +232,9 @@ const getRegistroById = async (req, res) => {
         r.telefono_referencia,
         r.permanencia,
         r.motivo_cierre,
+        r.numero_hermanos_pcd,
+        r.afiliacion_opcd,
+        r.fuente_informacion,
         r.id_municipio
       FROM public.REGISTRO_PCD r
       WHERE r.id_registro_discapacidad = $1;
@@ -281,6 +285,9 @@ const getRegistrosByMunicipio = async (req, res) => {
         r.telefono_referencia,
         r.permanencia,
         r.motivo_cierre,
+        r.numero_hermanos_pcd,
+        r.afiliacion_opcd,
+        r.fuente_informacion,
         r.id_municipio
       FROM public.REGISTRO_PCD r
       WHERE r.id_municipio = $1;
@@ -321,7 +328,10 @@ const createRegistroPcd = async (req, res) => {
     telefono_pdc,
     telefono_referencia,
     permanencia,
-    motivo_cierre
+    motivo_cierre,
+    numero_hermanos_pcd,
+    afiliacion_opcd,
+    fuente_informacion
   } = req.body;
 
   const { id_municipio } = req.params; 
@@ -353,9 +363,12 @@ const createRegistroPcd = async (req, res) => {
         telefono_referencia,
         permanencia,
         motivo_cierre,
+        numero_hermanos_pcd,
+        afiliacion_opcd,
+        fuente_informacion,
         id_municipio
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27
       ) RETURNING id_registro_discapacidad;
     `;
 
@@ -384,6 +397,9 @@ const createRegistroPcd = async (req, res) => {
       telefono_referencia,
       permanencia,
       motivo_cierre,
+      numero_hermanos_pcd,
+      afiliacion_opcd,
+      fuente_informacion,
       id_municipio
     ]);
 
@@ -421,7 +437,10 @@ const updateRegistroPcd = async (req, res) => {
     telefono_pdc,
     telefono_referencia,
     permanencia,
-    motivo_cierre
+    motivo_cierre,
+    numero_hermanos_pcd,
+    afiliacion_opcd,
+    fuente_informacion,
   } = req.body;
 
   const { id_registro_discapacidad } = req.params;
@@ -452,8 +471,11 @@ const updateRegistroPcd = async (req, res) => {
         telefono_pdc = COALESCE($20, telefono_pdc),
         telefono_referencia = COALESCE($21, telefono_referencia),
         permanencia = COALESCE($22, permanencia),
-        motivo_cierre = COALESCE($23, motivo_cierre)
-      WHERE id_registro_discapacidad = $24
+        motivo_cierre = COALESCE($23, motivo_cierre),
+        numero_hermanos_pcd = COALESCE($24, numero_hermanos_pcd),
+        afiliacion_opcd = COALESCE($25, afiliacion_opcd),
+        fuente_informacion = COALESCE($26, fuente_informacion)
+      WHERE id_registro_discapacidad = $27
       RETURNING id_registro_discapacidad;
     `;
 
@@ -482,6 +504,9 @@ const updateRegistroPcd = async (req, res) => {
       telefono_referencia,
       permanencia,
       motivo_cierre,
+      numero_hermanos_pcd,
+      afiliacion_opcd,
+      fuente_informacion,
       id_registro_discapacidad
     ]);
 

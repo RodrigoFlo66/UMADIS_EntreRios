@@ -39,7 +39,7 @@ const augmentedData = [
     { atributo: "Sexo", isHeader: true },
     ...data.filter(row => row.atributo === "VARON" || row.atributo === "MUJER"),
     { atributo: "Edad", isHeader: true },
-    ...data.filter(row => ["1-10", "11-18", "19-25", "26-59", "60+"].includes(row.atributo)),
+    ...data.filter(row => ["0-5", "6-18", "19-30", "31-59", "60+"].includes(row.atributo)),
     { atributo: "Grado de Discapacidad", isHeader: true },
     ...data.filter(row => ["MUY GRAVE", "GRAVE", "MODERADO", "LEVE"].includes(row.atributo)),
     { atributo: "Tipo de Discapacidad", isHeader: true },

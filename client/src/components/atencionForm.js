@@ -175,7 +175,7 @@ export function createFormAtencion(data) {
     const donacion = createInputWithLabel('donacion', 'text', "", "Donación-Beneficio", true);
     rightHalf.appendChild(donacion);
   
-    const informante = createInputWithLabel('nombre_informante', 'text', "", "Nombre del informante", true);
+    const informante = createInputWithLabel('nombre_informante', 'text', "", "Atencion realizada por:", true);
     rightHalf.appendChild(informante);
   
     const adjunto = createFileInputWithLabel('link_adjunto', "Documento adjunto (PDF)");

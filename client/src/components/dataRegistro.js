@@ -100,6 +100,7 @@ export async function mostrarPerfil(id_registro_discapacidad) {
         <tr><th>Información Laboral:</th><td>${data.info_laboral}</td></tr>
         <tr><th>Nombre del Familiar:</th><td>${data.nombre_familiar}</td></tr>
         <tr><th>Número de Hijos:</th><td>${data.nro_hijos_pcd}</td></tr>
+        <tr><th>Número de Hermanos de Pcd:</th><td>${data.numero_hermanos_pcd}</td></tr>
         <tr><th>Conyuge:</th><td>${data.conyuge_pcd}</td></tr>
         <tr><th>Dirección de Domicilio:</th><td>${data.direc_domicilio}</td></tr>
         <tr><th>Distrito de Domicilio:</th><td>${data.distrito_domicilio}</td></tr>
@@ -107,6 +108,8 @@ export async function mostrarPerfil(id_registro_discapacidad) {
         <tr><th>Teléfono de Referencia:</th><td>${data.telefono_referencia}</td></tr>
         <tr><th>Permanencia:</th><td>${data.permanencia}</td></tr>
         <tr><th>Motivo de Cierre:</th><td>${data.motivo_cierre}</td></tr>
+        <tr><th>Afiliación a OPD:</th><td>${data.afiliacion_opcd}</td></tr>
+        <tr><th>Fuente de Información:</th><td>${data.fuente_informacion}</td></tr>
     `;
     container.appendChild(profileTable);
 }

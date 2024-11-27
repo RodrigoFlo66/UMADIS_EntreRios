@@ -143,17 +143,26 @@ footer {
   padding: 0 20px; /* Ajusta según sea necesario */
 }
 footer .container {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
+  position: relative;
 }
-
+.footer .text-center {
+  margin-top: 40px; /* Ajusta el margen superior para posicionar el texto más abajo */
+  font-family: 'Arial', sans-serif; /* Cambia la tipografía si es necesario */
+  font-size: 14px; /* Ajusta el tamaño de la fuente */
+  color: #504f4f; /* Cambia el color del texto si es necesario */
+  font-style: italic;
+}
 footer .container img {
   max-width: 150px; /* Ajusta según sea necesario */
   height: auto;
 }
-footer .container img.logo-punata {
-  max-width: 70px; /* Ajusta según sea necesario */
+footer .container img.logo-GAMER {
+  max-width: 60px; /* Ajusta según sea necesario */
+  height: auto;
+}
+
+footer .container img.logo-FJS {
+  max-width: 110px; /* Ajusta según sea necesario */
   height: auto;
 }
 footer .container .logo-left {
