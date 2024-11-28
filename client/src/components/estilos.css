@@ -144,11 +144,14 @@ footer {
 }
 footer .container {
   position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .footer .text-center {
-  margin-top: 40px; /* Ajusta el margen superior para posicionar el texto más abajo */
+  margin-top: 50px; /* Ajusta el margen superior para posicionar el texto más abajo */
   font-family: 'Arial', sans-serif; /* Cambia la tipografía si es necesario */
-  font-size: 14px; /* Ajusta el tamaño de la fuente */
+  font-size: 12px; /* Ajusta el tamaño de la fuente */
   color: #504f4f; /* Cambia el color del texto si es necesario */
   font-style: italic;
 }
@@ -225,4 +228,88 @@ footer .container .logo-right {
 .button-responsive button.visible {
    visibility: visible; /* Muestra el botón */
    position: static; /* Mantiene el botón en el flujo del documento */
+}
+.login-body {
+  display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+}
+
+.loginApp-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 1200px;
+  gap: 1rem;
+}
+
+.logo {
+  max-width: 150px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.login-container {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.login-container h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.login-container .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.login-container label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.login-container button:hover {
+  background: #45a049;
+}
+
+.login-container button:active {
+  transform: scale(0.98);
 }
