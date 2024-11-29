@@ -13,7 +13,7 @@ export async function tablaPaciente(id_registro_discapacidad) {
     mainContainer.innerHTML = ""; // Limpia el contenido anterior
     // Crear y agregar el título
     const profileTitle = document.createElement("h2");
-    profileTitle.textContent = "REPORTE HISTOÓRICO DEL PACIENTE";
+    profileTitle.textContent = "REPORTE HISTÓRICO DEL PACIENTE";
     profileTitle.className = "text-center text-primary mb-4";
     mainContainer.appendChild(profileTitle);
     filterTable(mainContainer); // Agrega la barra de filtros personalizados
@@ -118,10 +118,27 @@ export async function tablaPaciente(id_registro_discapacidad) {
 /////////////////////////////////////////////////////////
     // Configura la exportación al hacer clic en el botón
    document.getElementById("exportAtencionList").addEventListener("click", () => {
-        table.download("csv", "Reporte hitorico de paciente.csv", {
-            delimiter: ",", // Cambia el delimitador si necesitas otro
-            bom: true       // Incluye BOM para compatibilidad UTF-8
-        });
+    const data = table.getData(); // Obtener todos los datos
+
+    // Crear hoja de cálculo
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Registros");
+
+    // Guardar como archivo Excel
+    XLSX.writeFile(wb, "Reporte_histórico_paciente.xlsx");
+    });
+    // Exportar solo los datos visibles (después de aplicar un filtro)
+    document.getElementById("exportFiltroA").addEventListener("click", () => {
+        const data = table.getData("active"); // Obtener solo los datos visibles
+
+        // Crear hoja de cálculo
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Registros Filtrados");
+
+        // Guardar como archivo Excel
+        XLSX.writeFile(wb, "Reporte_filtrado_paciente.xlsx");
     });
     
     
@@ -138,20 +155,22 @@ function filterTable(mainContainer) {
     // Crear la barra de filtros en una variable
     const filtersBar = document.createElement("div");
     filtersBar.innerHTML = `
-     <div class="form-group d-flex align-items-center justify-content-between mb-3" style="gap: 10px; max-width: 600px;">
-        
+     <div class="filter-bar form-group d-flex flex-wrap align-items-center justify-content-between mb-3" style="gap: 15px;">
+        <div class="filter-item d-flex align-items-center me-3">
             <div class="d-flex align-items-center me-3">
                 <label for="startDate" class="form-label me-2 mb-0" style="white-space: nowrap;">Fecha Inicio:</label>
                 <input type="date" id="startDate" class="form-control" style="width: auto;" />
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center me-3">
                 <label for="endDate" class="form-label me-2 mb-0" style="white-space: nowrap;">Fecha Fin:</label>
                 <input type="date" id="endDate" class="form-control" style="width: auto;" />
             </div>
-        
-    <button id="clearDatesButton" class="btn btn-warning" style="white-space: nowrap;">Limpiar Fechas</button>
-    <button id="exportAtencionList" class="btn btn-success" style="white-space: nowrap;">Exportar todo</button>
-    <button id="exportFiltroA" class="btn btn-primary" style="white-space: nowrap;">Exportar filtro</button>
+            <button id="clearDatesButton" class="btn btn-warning" style="white-space: nowrap;">Limpiar Fechas</button>
+       </div> 
+        <div class="filter-item d-flex align-items-center ">
+        <button id="exportAtencionList" class="btn btn-success me-2" style="white-space: nowrap;">Exportar todo</button>
+        <button id="exportFiltroA" class="btn btn-primary" style="white-space: nowrap;">Exportar filtro</button>
+        </div>
     </div>
 
     `;

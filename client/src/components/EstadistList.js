@@ -49,7 +49,7 @@ const augmentedData = [
 const generateColumns = (data) => {
     const districts = Object.keys(data[0]).filter(key => key !== "atributo" && key !== "isHeader");
     const columns = [
-        { title: "Atributo", field: "atributo", width: 150, headerFilter: "input" },
+        { title: "Característica", field: "atributo", width: 150, headerFilter: "input" },
         ...districts.map(district => ({
             title: district,
             field: district,
@@ -82,10 +82,15 @@ const table = new Tabulator.TabulatorFull(tableContainer, {
 
     // Configura la exportación al hacer clic en el botón
     document.getElementById("ExportarEstadistica").addEventListener("click", () => {
-        table.download("csv", "Estadisticas.csv", {
-            delimiter: ",", // Cambia el delimitador si necesitas otro
-            bom: true       // Incluye BOM para compatibilidad UTF-8
-        });
+        const data = table.getData(); // Obtener todos los datos
+
+    // Crear hoja de cálculo
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Registros");
+
+    // Guardar como archivo Excel
+    XLSX.writeFile(wb, "Estadísticas.xlsx");
     });
 }
 function filterTable(mainContainer) {

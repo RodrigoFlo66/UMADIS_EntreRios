@@ -69,14 +69,14 @@ export async function mostrarPerfil(id_registro_discapacidad) {
     buttonsContainer.appendChild(createButton("Editar Registro", () => editarRegistro(id_registro_discapacidad), 'btn btn-success me-2'));
     buttonsContainer.appendChild(createButton("Ver Historial", () => verHistorial(id_registro_discapacidad), 'btn btn-secondary me-2'));
     buttonsContainer.appendChild(createButton("Registro de Atención", () => registrarAtencion(data), 'btn btn-warning'));
-    container.appendChild(buttonsContainer);
+    
 
     // Título de perfil
     const profileTitle = document.createElement("h2");
     profileTitle.textContent = `DATOS DE ${data.nombre_apellido}`;
     profileTitle.className = "text-center text-primary mb-4";
     container.appendChild(profileTitle);
-
+    container.appendChild(buttonsContainer);
     // Información de perfil en formato de tabla
     const profileTable = document.createElement("table");
     profileTable.className = "profile-table";

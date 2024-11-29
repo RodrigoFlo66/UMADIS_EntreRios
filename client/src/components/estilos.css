@@ -313,3 +313,43 @@ footer .container .logo-right {
 .login-container button:active {
   transform: scale(0.98);
 }
+
+/* Estilos para la barra de filtros */
+.filter-bar {
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0); /* Fondo texturizado */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 15px; /* Espaciado interno */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+  margin-bottom: 20px; /* Espaciado inferior */
+}
+
+/* Estilos para los elementos de la barra de filtros */
+.filter-item {
+  background: #fff; /* Fondo blanco para los elementos */
+  border-radius: 4px; /* Bordes redondeados */
+  padding: 10px; /* Espaciado interno */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+  margin-right: 10px; /* Espaciado entre elementos */
+}
+
+/* Estilos para las etiquetas */
+.filter-item .form-label {
+  font-weight: bold; /* Texto en negrita */
+  color: #333; /* Color del texto */
+  margin-right: 10px; /* Espaciado a la derecha */
+}
+
+/* Estilos para los selectores */
+.filter-item .form-select {
+  border: 1px solid #ccc; /* Borde del selector */
+  border-radius: 4px; /* Bordes redondeados */
+  padding: 5px 10px; /* Espaciado interno */
+  background: #fff; /* Fondo blanco */
+  color: #333; /* Color del texto */
+  transition: border-color 0.3s; /* Transición para el borde */
+}
+
+.filter-item .form-select:focus {
+  border-color: #007bff; /* Color del borde al enfocar */
+  outline: none; /* Sin borde de enfoque */
+}

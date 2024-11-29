@@ -288,7 +288,7 @@ form.appendChild(leftHalf);
 form.appendChild(rightHalf);
 function getIntValue(id) {
   const value = document.getElementById(id).value;
-  return value === "" ? null : parseInt(value, 10);
+  return value === "" ? 0 : parseInt(value, 10);
 }
 const clearButton = document.createElement('button');
 clearButton.type = 'button'; 
@@ -462,7 +462,7 @@ export function getFromData() {
     telefono_referencia: getIntValue('telefono_referencia'),
     permanencia: document.getElementById('permanenciaForm').value,
     motivo_cierre: document.getElementById('motivo_cierre').value,
-    numero_hermanos_pcd: document.getElementById('numero_hermanos_pcd').value,
+    numero_hermanos_pcd: getIntValue('numero_hermanos_pcd'),
     afiliacion_opcd: document.getElementById('afiliacion_opcd').value,
     fuente_informacion: document.getElementById('fuente_informacion').value,
 };

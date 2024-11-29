@@ -145,12 +145,28 @@ export async function initializeTable() {
 /////////////////////////////////////////////////////////
     // Configura la exportación al hacer clic en el botón
     document.getElementById("printAllButton").addEventListener("click", () => {
-        table.download("csv", "Lista de registros.csv", {
-            delimiter: ",", // Cambia el delimitador si necesitas otro
-            bom: true       // Incluye BOM para compatibilidad UTF-8
-        });
-    });
+        const data = table.getData(); // Obtener todos los datos
+
+        // Crear hoja de cálculo
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Registros");
     
+        // Guardar como archivo Excel
+        XLSX.writeFile(wb, "Lista_de_registros_completa.xlsx");
+    });
+    // Exportar solo los datos visibles (después de aplicar un filtro)
+    document.getElementById("printFilteredButton").addEventListener("click", () => {
+        const data = table.getData("active"); // Obtener solo los datos visibles
+
+            // Crear hoja de cálculo
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Registros Filtrados");
+
+            // Guardar como archivo Excel
+            XLSX.writeFile(wb, "Lista_de_registros_filtrados.xlsx");
+    });
     
     // Añade el evento de clic en las filas después de la configuración completa
     table.on("rowClick", (e, row) => {
@@ -169,9 +185,9 @@ function filterTable() {
     // Crear la barra de filtros en una variable
     const filtersBar = document.getElementById("customFilters");
     filtersBar.innerHTML = `
-        <div class="form-group d-flex flex-wrap align-items-center justify-content-between mb-3" style="gap: 15px;">
-    <!-- Filtro de permanencia -->
-    <div class="d-flex align-items-center">
+        <div class="filter-bar form-group d-flex flex-wrap align-items-center justify-content-between mb-3" style="gap: 15px;">
+        <!-- Filtro de permanencia -->
+    <div class="filter-item d-flex align-items-center">
         <label for="permanenciaL" class="form-label me-2 mb-0" style="white-space: nowrap;">Permanencia:</label>
         <select id="permanenciaL" class="form-select" style="width: auto;">
             <option value="">Todos</option>
@@ -180,7 +196,7 @@ function filterTable() {
         </select>
     </div>
     <!-- Filtro de Vivienda -->
-    <div class="d-flex align-items-center">
+    <div class="filter-item d-flex align-items-center">
         <label for="viviendaFiltro" class="form-label me-2 mb-0" style="white-space: nowrap;">Información de Vivienda:</label>
         <select id="viviendaFiltro" class="form-select" style="width: auto;">
             <option value="">Todos</option>
@@ -190,7 +206,7 @@ function filterTable() {
         </select>
     </div>
     <!-- Filtro de info laboral -->
-    <div class="d-flex align-items-center">
+    <div class="filter-item d-flex align-items-center">
         <label for="laboralFiltro" class="form-label me-2 mb-0" style="white-space: nowrap;">Información Laboral:</label>
         <select id="laboralFiltro" class="form-select" style="width: auto;">
             <option value="">Todos</option>
@@ -200,7 +216,7 @@ function filterTable() {
         </select>
     </div>
     <!-- Filtro de estado civil -->
-    <div class="d-flex align-items-center">
+    <div class="filter-item d-flex align-items-center">
         <label for="estadoCivilF" class="form-label me-2 mb-0" style="white-space: nowrap;">Estado civil:</label>
         <select id="estadoCivilF" class="form-select" style="width: auto;">
             <option value="">Todos</option>
@@ -213,7 +229,7 @@ function filterTable() {
     </div>
 
     <!-- Filtro de sexo -->
-    <div class="d-flex align-items-center">
+    <div class="filter-item d-flex align-items-center">
         <label for="sexoFiltro" class="form-label me-2 mb-0" style="white-space: nowrap;">Sexo:</label>
         <select id="sexoFiltro" class="form-select" style="width: auto;">
             <option value="">Todos</option>
@@ -223,7 +239,7 @@ function filterTable() {
     </div>
 
     <!-- Filtro de nivel de escolaridad -->
-    <div class="d-flex align-items-center">
+    <div class="filter-item d-flex align-items-center">
         <label for="nivelEscolaridadF" class="form-label me-2 mb-0" style="white-space: nowrap;">Nivel de Escolaridad:</label>
         <select id="nivelEscolaridadF" class="form-select" style="width: auto;">
             <option value="">Todos</option>
@@ -238,7 +254,7 @@ function filterTable() {
     </div>
     
     <!-- Botones -->
-    <div class="d-flex align-items-center ">
+    <div class="filter-item d-flex align-items-center ">
         <button id="printAllButton" class="btn btn-success me-2">Exportar Todo</button>
         <button id="printFilteredButton" class="btn btn-primary">Exportar Filtro</button>
     </div>

@@ -1,4 +1,5 @@
 import { loadNav } from '../components/Nav.js'; 
+import { initializeTable } from './DataList.js';
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -26,14 +27,18 @@ document.addEventListener('DOMContentLoaded', function() {
       if (response.ok) {
         const data = await response.json();
 
-        if (data.idUsuario) {
+        if (data.nivelUsuario) {
           // Inicio de sesión exitoso
           loginFormContainer.style.display = 'none';
           appContent.style.display = 'block';
           document.getElementById('productForm').style.display = 'none'; 
           loadNav();
-          document.getElementById('footerApp').style.display = 'block';
+          initializeTable();
+          //document.getElementById('footerApp').style.display = 'block';
           document.body.classList.remove('login-body');
+          if(data.nivelUsuario === 'FUNCIONARIO') {
+            document.getElementById('userIcon').style.display = 'none';
+          }
         } else {
           throw new Error('Respuesta inesperada del servidor');
         }

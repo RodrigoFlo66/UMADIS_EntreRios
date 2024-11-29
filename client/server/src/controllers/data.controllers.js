@@ -649,7 +649,7 @@ const loginUsuario = async (req, res) => {
   const { nombre_usuario, pasword } = req.body;
 
   try {
-    const query = `SELECT id_usuario, pasword FROM public.USUARIO WHERE nombre_usuario = $1`;
+    const query = `SELECT id_usuario, pasword, nivel_usuario FROM public.USUARIO WHERE nombre_usuario = $1`;
     const result = await pool.query(query, [nombre_usuario]);
 
     // Verificar si el usuario existe
@@ -667,7 +667,7 @@ const loginUsuario = async (req, res) => {
     }
     return res.json({
       message: 'Inicio de sesión exitoso',
-      idUsuario: usuario.id_usuario
+      nivelUsuario: usuario.nivel_usuario
     });
   } catch (error) {
     console.error('Error al iniciar sesión:', error);

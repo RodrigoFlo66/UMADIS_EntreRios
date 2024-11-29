@@ -112,10 +112,27 @@ export async function tablaFuncionario() {
 /////////////////////////////////////////////////////////
     // Configura la exportación al hacer clic en el botón
     document.getElementById("exportFuncionarioList").addEventListener("click", () => {
-        table.download("csv", "Reporte_Historico.csv", {
-            delimiter: ",", // Cambia el delimitador si necesitas otro
-            bom: true       // Incluye BOM para compatibilidad UTF-8
-        });
+        const data = table.getData(); // Obtener todos los datos
+
+    // Crear hoja de cálculo
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Registros");
+
+    // Guardar como archivo Excel
+    XLSX.writeFile(wb, "Reporte_de_atención_completo.xlsx");
+    });
+    // Exportar solo los datos visibles (después de aplicar un filtro)
+    document.getElementById("exportFiltroF").addEventListener("click", () => {
+        const data = table.getData("active"); // Obtener solo los datos visibles
+
+        // Crear hoja de cálculo
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Registros Filtrados");
+
+        // Guardar como archivo Excel
+        XLSX.writeFile(wb, "Reporte_atención_filtrado.xlsx");
     });
 }
 
@@ -124,20 +141,22 @@ function filterTable(mainContainer) {
     const filtersBar = document.createElement("div");
 
     filtersBar.innerHTML = `
-     <div class="form-group d-flex align-items-center justify-content-between mb-3" style="gap: 10px; max-width: 600px;">
-        
+     <div class="filter-bar form-group d-flex flex-wrap align-items-center justify-content-between mb-3" style="gap: 15px;">
+        <div class="filter-item d-flex align-items-center me-3">
             <div class="d-flex align-items-center me-3">
                 <label for="startDate" class="form-label me-2 mb-0" style="white-space: nowrap;">Fecha Inicio:</label>
                 <input type="date" id="startDateF" class="form-control" style="width: auto;" />
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center me-3">
                 <label for="endDate" class="form-label me-2 mb-0" style="white-space: nowrap;">Fecha Fin:</label>
                 <input type="date" id="endDateF" class="form-control" style="width: auto;" />
             </div>
-        
-    <button id="clearDatesButtonF" class="btn btn-warning" style="white-space: nowrap;">Limpiar Fechas</button>
-    <button id="exportFuncionarioList" class="btn btn-success" style="white-space: nowrap;">Exportar todo</button>
-    <button id="exportFiltroF" class="btn btn-primary" style="white-space: nowrap;">Exportar filtro</button>
+            <button id="clearDatesButtonF" class="btn btn-warning" style="white-space: nowrap;">Limpiar Fechas</button>
+        </div>
+            <div class="filter-item d-flex align-items-center ">
+            <button id="exportFuncionarioList" class="btn btn-success me-2" style="white-space: nowrap;">Exportar todo</button>
+            <button id="exportFiltroF" class="btn btn-primary" style="white-space: nowrap;">Exportar filtro</button>
+        </div>
     </div>
 
     `;
