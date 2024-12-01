@@ -134,7 +134,9 @@ main {
 footer {
   position: fixed;
   bottom: 0;
-  width: 100%;
+  left: 0; /* Asegura que se alinee al borde izquierdo */
+  right: 0; /* Asegura que se alinee al borde derecho */
+  width: 100%; /* Asegura que abarque todo el ancho */
   background-color: #f2f6fa;
   height: 60px; /* Ajusta según sea necesario */
   display: flex;
@@ -173,7 +175,7 @@ footer .container .logo-left {
 }
 
 footer .container .logo-right {
-  margin-right: 0;
+  margin-right: 20px;
 }
 
 

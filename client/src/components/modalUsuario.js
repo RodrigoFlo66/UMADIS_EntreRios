@@ -28,19 +28,18 @@ export async function showUserModal() {
 `;
 
 document.body.insertAdjacentHTML('beforeend', modalHtml);
-const userContainer = document.querySelector('#user-list');
+
 
 // Inicializa el modal con las opciones 'backdrop' y 'keyboard'
 $('#userModal').modal({
     backdrop: 'static',  // Evita cerrar el modal al hacer clic fuera de él
     keyboard: false      // Evita cerrar el modal al presionar la tecla Esc
 });
-
-// Añade el evento para limpiar el contenedor y crear el botón al abrir el modal
-$('#userModal').on('shown.bs.modal', function () {
+    
     loadUsers();  // Carga los usuarios
     const modalBody = document.getElementById('modalBody');
     const existingButton = document.getElementById('add-user-btn');
+    const userContainer = document.querySelector('#user-list');
 
     // Elimina el botón si ya existe para evitar duplicados
     if (existingButton) {
@@ -56,8 +55,8 @@ $('#userModal').on('shown.bs.modal', function () {
     modalBody.appendChild(addNewButton);
     // Registra el evento `click` para añadir usuario solo una vez al cargar la página
     addNewButton.addEventListener('click', () => addUserRow(userContainer));
-});
-
+    //$('#userModal').modal('show');
+}
 // Función para añadir una nueva fila de usuario editable
 function addUserRow(container) {
     const addButton = document.getElementById('add-user-btn');
@@ -96,28 +95,22 @@ function addUserRow(container) {
     container.appendChild(newRow);
 
     document.getElementById(`save-btn-${newUserId}`).addEventListener('click', async () => {
-        const addButton = document.getElementById('add-user-btn');
-        addButton.disabled = false;  // Habilita el botón de añadir
-        saveNewUser(newUserId);
-        newRow.remove();  // Elimina la fila temporal    
+        saveNewUser(newUserId);   
     });
     document.getElementById(`cancel-btn-${newUserId}`).addEventListener('click', () => {
-        const addButton = document.getElementById('add-user-btn');
-    addButton.disabled = false;  // Habilita el botón de añadir
-    loadUsers();
-    newRow.remove();  // Elimina la fila temporal
+        addButton.disabled = false;  // Habilita el botón de añadir
+        newRow.remove();  // Elimina la fila temporal
+        //loadUsers();
     });
-}
-
-    //$('#userModal').modal('show');
 }
 async function loadUsers() {
     const userContainer = document.querySelector('#user-list');
+    userContainer.innerHTML = '';  // Limpia el contenedor antes de agregar los usuarios
     const response = await fetch(`${serverUrl}/usuarios/${id_municipio}`);
     const usersData = await response.json();
     const users = usersData.data;
 
-    userContainer.innerHTML = '';  // Limpia el contenedor antes de agregar los usuarios
+    
 
     users.forEach(user => {
         createUserRow(user, userContainer);  // Crea una fila para cada usuario
@@ -217,8 +210,6 @@ async function saveNewUser(newUserId) {
         messageDiv.textContent = '';
         messageDiv.className = '';
       }, 3000);
-        const createdUser = await response.json();
-        const userContainer = document.querySelector('#user-list');
         const addButton = document.getElementById('add-user-btn');
         addButton.disabled = false;  // Habilita el botón de añadir
         //document.getElementById(`user-${newUserId}`).remove();  // Elimina la fila temporal
@@ -233,10 +224,8 @@ async function saveNewUser(newUserId) {
         messageDiv.textContent = '';
         messageDiv.className = '';
       }, 3000);
-      const addButton = document.getElementById('add-user-btn');
-        addButton.disabled = false;  // Habilita el botón de añadir
+        //addButton.disabled = false;  // Habilita el botón de añadir
         //document.getElementById(`user-${newUserId}`).remove();  // Elimina la fila temporal
-      $('#userModal').modal('hide');
     }
     } else {
         const messageDiv = document.getElementById('message');
@@ -292,13 +281,17 @@ function editUsuario(id_usuario) {
 
     // Si todos los campos son válidos, proceder con la lógica de guardado
     if (isValid) {
-         // Si está guardando, recoger los datos actualizados
-         const updatedData = {
-            nombre_usuario: usernameField.value,
-            pasword: passwordField.value,
+          // Crear el objeto de datos actualizado
+        const updatedData = {
+            nombre_usuario: usernameField.value.trim(),
             nivel_usuario: userLevelField.value
         };
-        
+
+        // Si la contraseña fue proporcionada, incluirla
+        if (passwordField.value !== 'undefined') {
+            updatedData.pasword = passwordField.value;
+        }
+        console.log(updatedData);
         // Realizar la solicitud PUT
         fetch(`${serverUrl}/usuario/${id_usuario}`, {
             method: 'PUT',
