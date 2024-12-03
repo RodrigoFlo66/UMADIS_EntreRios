@@ -244,7 +244,7 @@ const nombreFamiliar = createInputWithLabel('nombre_familiar', 'text', "", "Nomb
   rightHalf.appendChild(nombreFamiliar);
   const numHijos = createInputWithLabel('nro_hijos_pcd', 'number', "", "Numero de hijos de PcD", false);
   rightHalf.appendChild(numHijos);
-  const numHermanos = createInputWithLabel('numero_hermanos_pcd', 'number', "", "Numero de hermanos ded PcD", false);
+  const numHermanos = createInputWithLabel('numero_hermanos_pcd', 'number', "", "Numero de hermanos del PcD", false);
   rightHalf.appendChild(numHermanos);
   const conyuge = createInputWithLabel('conyuge_pcd', 'text', "", "Conyuge de PcD", false);
   rightHalf.appendChild(conyuge);
@@ -392,6 +392,7 @@ saveButton.addEventListener('click', async function(e) {
         },
         body: JSON.stringify(formData)
     });
+    const data = await response.json();
     if (response.ok) {
        // Muestra un mensaje de éxito
        form.reset();
@@ -418,7 +419,7 @@ saveButton.addEventListener('click', async function(e) {
       }, 3000);
     } else {
       const messageDiv = document.getElementById('message');
-      messageDiv.textContent = 'Error al guardar el registro.';
+      messageDiv.textContent = data.message || 'Error al guardar el registro.';
       messageDiv.className = 'alert alert-danger';
       messageDiv.style.display = 'block';
       setTimeout(() => {

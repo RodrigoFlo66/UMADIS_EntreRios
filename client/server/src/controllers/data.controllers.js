@@ -334,9 +334,19 @@ const createRegistroPcd = async (req, res) => {
     fuente_informacion
   } = req.body;
 
-  const { id_municipio } = req.params; 
+  const { id_municipio } = req.params;
 
   try {
+    // Comprobar si el nombre_apellido ya existe en la tabla
+    const checkQuery = `SELECT COUNT(*) FROM public.REGISTRO_PCD WHERE nombre_apellido = $1`;
+    const checkResult = await pool.query(checkQuery, [nombre_apellido]);
+
+    if (parseInt(checkResult.rows[0].count) > 0) {
+      return res.status(400).json({
+        message: 'El registro con este nombre y apellido ya existe'
+      });
+    }
+
     // Consulta SQL para insertar los datos en la tabla REGISTRO_PCD
     const query = `
       INSERT INTO public.REGISTRO_PCD (
@@ -372,7 +382,6 @@ const createRegistroPcd = async (req, res) => {
       ) RETURNING id_registro_discapacidad;
     `;
 
-    // Ejecutar la consulta con los valores
     const result = await pool.query(query, [
       nombre_apellido,
       fecha_nacimiento,
@@ -403,7 +412,6 @@ const createRegistroPcd = async (req, res) => {
       id_municipio
     ]);
 
-    // Retornar una respuesta con el ID del nuevo registro creado
     return res.json({
       message: 'Registro creado exitosamente',
       idRegistro: result.rows[0].id_registro_discapacidad
@@ -413,6 +421,7 @@ const createRegistroPcd = async (req, res) => {
     return res.status(500).json({ error: 'Error al crear el registro' });
   }
 };
+
 const updateRegistroPcd = async (req, res) => {
   const {
     nombre_apellido,

@@ -153,7 +153,7 @@ footer .container {
 .footer .text-center {
   margin-top: 50px; /* Ajusta el margen superior para posicionar el texto más abajo */
   font-family: 'Arial', sans-serif; /* Cambia la tipografía si es necesario */
-  font-size: 12px; /* Ajusta el tamaño de la fuente */
+  font-size: 10px; /* Ajusta el tamaño de la fuente */
   color: #504f4f; /* Cambia el color del texto si es necesario */
   font-style: italic;
 }
@@ -162,12 +162,12 @@ footer .container img {
   height: auto;
 }
 footer .container img.logo-GAMER {
-  max-width: 60px; /* Ajusta según sea necesario */
+  max-width: 100px; /* Ajusta según sea necesario */
   height: auto;
 }
 
 footer .container img.logo-FJS {
-  max-width: 110px; /* Ajusta según sea necesario */
+  max-width: 60px; /* Ajusta según sea necesario */
   height: auto;
 }
 footer .container .logo-left {
@@ -245,7 +245,7 @@ footer .container .logo-right {
 .loginApp-container {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 100%;
   max-width: 1200px;
   gap: 1rem;
@@ -262,13 +262,19 @@ footer .container .logo-right {
 }
 
 .login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background: rgba(255, 255, 255, 0.1);
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 100%;
+  max-width: 600px;
+  width: 600%;
   text-align: center;
+  margin-left: auto; /* Empuja el contenedor hacia el centro */
+  margin-right: auto; /* Empuja el contenedor hacia el centro */
 }
 
 .login-container h1 {
@@ -315,6 +321,30 @@ footer .container .logo-right {
 .login-container button:active {
   transform: scale(0.98);
 }
+.logos-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alinea los logos a la izquierda */
+  gap: 2rem; /* Espacio entre los logos */
+  padding: 1rem; /* Espaciado interno */
+  border: 1px solid #ddd; /* Borde */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+  background-color: #e0d3f1; /* Fondo blanco */
+}
+
+.collaboration {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Espacio entre el texto y el logo */
+}
+
+.collaboration p {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #000000;
+}
 
 /* Estilos para la barra de filtros */
 .filter-bar {
@@ -354,4 +384,9 @@ footer .container .logo-right {
 .filter-item .form-select:focus {
   border-color: #007bff; /* Color del borde al enfocar */
   outline: none; /* Sin borde de enfoque */
+}
+.text-right-custom {
+  text-align: right; /* Alinear el texto a la derecha */
+  font-family: 'Verdana', sans-serif; /* Cambiar el tipo de letra */
+  font-size: 10px; /* Cambiar el tamaño de la letra */
 }

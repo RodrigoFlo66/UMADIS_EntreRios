@@ -142,7 +142,7 @@ export function createFormAtencion(data) {
     rightHalf.className = 'card card-body bg-light form-half';
   
     // DATOS DEL REGISTRO
-    const fechaRegistro = createInputWithLabel('fecha_registro', 'date', "", "Fecha de registro", true);
+    const fechaRegistro = createInputWithLabel('fecha_registro', 'date', "", "Fecha", true);
     leftHalf.appendChild(fechaRegistro);
   
     const lugarRegistro = createSelectWithLabel('lugar_registro', [
@@ -151,8 +151,9 @@ export function createFormAtencion(data) {
         { value: 'CONSULTORIO', text: 'CONSULTORIO' },
         { value: 'GABINETE', text: 'GABINETE' },
         { value: 'DOMICILIO', text: 'DOMICILIO' },
-        { value: 'CIUDAD', text: 'CIUDAD' }
-      ], 'Lugar de registro', true);
+        { value: 'CIUDAD', text: 'CIUDAD' },
+        { value: 'ESCUELA', text: 'ESCUELA' }
+      ], 'Lugar', true);
     leftHalf.appendChild(lugarRegistro);
   
     const nombreCompleto = createInputWithLabel('nombre_pcd', 'text', "", "Nombres y Apellidos de PcD", false);
@@ -172,7 +173,7 @@ export function createFormAtencion(data) {
       ], 'Área de atención', true);
     rightHalf.appendChild(area);
   
-    const donacion = createInputWithLabel('donacion', 'text', "", "Donación-Beneficio", true);
+    const donacion = createInputWithLabel('donacion', 'text', "", "Donación-Beneficio", false);
     rightHalf.appendChild(donacion);
   
     const informante = createInputWithLabel('nombre_informante', 'text', "", "Atencion realizada por:", true);

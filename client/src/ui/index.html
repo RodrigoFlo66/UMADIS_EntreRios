@@ -12,23 +12,31 @@
 <body>
 <main class="p-4 my-auto" style="height: 100vh;">
   <div id="loginForm" class="loginApp-container">
-    <img src="../icon/FJS COLAB.jpg" alt="Logo 1" class="logo">
-        <div class="login-container">
-            <h1>Inicio de Sesión</h1>
-            <form id="login">
-                <div class="form-group">
-                    <label for="username">Nombre de Usuario</label>
-                    <input type="text" id="username" name="username" placeholder="Escribe tu usuario" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" placeholder="Escribe tu contraseña" required>
-                </div>
-                <button type="submit">Ingresar</button>
-            </form>
-        </div>
-        <img src="../icon/GAMER.jpeg" alt="Logo 2" class="logo">
+    <div class="logos-container ms-0">
+      <img src="../icon/GAMER.jpeg" alt="Logo 1" class="logo">
+      <div class="collaboration">
+        <p>En colaboración con:</p>
+        <img src="../icon/logo FJS.jpeg" alt="Logo 2" class="logo">
+    </div>
+  </div>
+    
+    <div class="login-container ms-0">
+        <h1>Inicio de Sesión</h1>
+        <form id="login">
+            <div class="form-group">
+                <label for="username">Nombre de Usuario</label>
+                <input type="text" id="username" name="username" placeholder="Escribe tu usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="Escribe tu contraseña" required>
+            </div>
+            <button type="submit">Ingresar</button>
+        </form>
+    </div>
+    
 </div>
+
   <div id="loginContainer"></div> 
   <div id="message" class="col-12"></div>
   <div id="appContent" style="display: none;">
@@ -54,11 +62,21 @@
     <div id="listaEstadistica"></div>
     <footer id= "footerApp" class="footer py-1">
       <div class="container d-flex justify-content-between align-items-center">
-          <img src="../icon/logo FJS.jpeg" alt="Logo Fundacion Justicia Social" class="logo-left logo-FJS"> 
+          <img src="../icon/GAMER.jpg" alt="Logo Fundacion Justicia Social" class="logo-left logo-FJS"> 
           <div class="text-center" style="margin-top: 20px;">
-              <p class="mb-0" style="font-family: 'Arial', sans-serif;">&copy; 2024 Realizado por Rodrigo Flores V.</p>
+            <p class="ms-5" style="font-family: 'Arial', sans-serif;">
+              &copy; 2024 Realizado por 
+              <a href="https://rodrigo-flores-villarroel.my.canva.site/" target="_blank" style="color: inherit; text-decoration: underline;">
+                Rodrigo Flores V.
+              </a>
+            </p>
           </div>
-          <img src="../icon/GAMER.jpg" alt="Logo G.A.M.E.R." class="logo-right logo-GAMER">
+          <div class="d-flex align-items-center text-right-custom">
+            <p class="mb-0">
+              En colaboración con:   
+            </p> 
+            <img src="../icon/logo FJS.jpeg" alt="Logo G.A.M.E.R." class="logo-right logo-GAMER ms-2">
+          </div>
       </div>
   </footer>
   </div>
