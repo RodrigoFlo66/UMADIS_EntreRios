@@ -1,4 +1,3 @@
-//import { showFilterModal, exportData } from './FilterModal.js';
 import { exportList } from './EstadistList.js';
 import {showUserModal} from "./modalUsuario.js";
 import { tablaFuncionario } from './reporteFuncionario.js';
@@ -75,7 +74,6 @@ export function loadNav() {
     document.getElementById('listaFuncionario').style.display = 'none';
     document.getElementById('listaEstadistica').style.display = 'none';
     document.getElementById('estadistica').style.display = 'block';
-    //loadData(1, false);
   });
 
   
