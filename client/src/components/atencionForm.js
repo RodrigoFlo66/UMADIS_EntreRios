@@ -159,7 +159,7 @@ export function createFormAtencion(data) {
     const nombreCompleto = createInputWithLabel('nombre_pcd', 'text', "", "Nombres y Apellidos de PcD", false);
     leftHalf.appendChild(nombreCompleto);
   
-    const atencionRealizada = createInputWithLabel('atencion_realizada', 'text', "", "Atención realizada", true);
+    const atencionRealizada = createInputWithLabel('atencion_realizada', 'text', "", "Detalle de atención realizada", true);
     leftHalf.appendChild(atencionRealizada);
   
     const area = createSelectWithLabel('area_atencion', [
@@ -237,6 +237,7 @@ rightHalf.appendChild(adjunto);
 
 saveButton.addEventListener('click', async function(e) {
     e.preventDefault(); // Prevenir el envío por defecto
+    saveButton.disabled = true;
     // Verificar campos obligatorios
     const requiredFields = form.querySelectorAll('input[required]');
     let isValid = true;
@@ -271,6 +272,7 @@ saveButton.addEventListener('click', async function(e) {
             messageDiv.textContent = '';
             messageDiv.className = '';
         }, 3000);
+        saveButton.disabled = false;
         return; // Detener el envío si hay campos vacíos
     }
 
@@ -319,6 +321,9 @@ saveButton.addEventListener('click', async function(e) {
         messageDiv.textContent = '';
         messageDiv.className = '';
       }, 3000);
+    } finally {
+      // Volver a habilitar el botón después de que se procese la solicitud
+      saveButton.disabled = false;
     }
 });
 }
@@ -326,11 +331,11 @@ export function getFromData() {
   const formData = {
     fecha_registro: document.getElementById('fecha_registro').value === "" ? null : document.getElementById('fecha_registro').value,
     lugar_registro: document.getElementById('lugar_registro').value,
-    nombre_pcd: document.getElementById('nombre_pcd').value,
-    atencion_realizada: document.getElementById('atencion_realizada').value,
+    nombre_pcd: document.getElementById('nombre_pcd').value.toUpperCase(),
+    atencion_realizada: document.getElementById('atencion_realizada').value.toUpperCase(),
     area_atencion: document.getElementById('area_atencion').value,
-    donacion: document.getElementById('donacion').value,
-    nombre_informante: document.getElementById('nombre_informante').value,
+    donacion: document.getElementById('donacion').value.toUpperCase(),
+    nombre_informante: document.getElementById('nombre_informante').value.toUpperCase(),
     link_adjunto: linkAdjunto
 };
 return formData;

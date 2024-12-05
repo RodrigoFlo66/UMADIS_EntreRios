@@ -7,7 +7,7 @@
     "build": "vite build",
     "start": "electron .",
     "serve": "npm run build && npm run start",
-    "pack": "electron-packager . U.M.A.D.I.S._G.A.M.E.R. --platform=win32 --arch=x64 --icon=src/icon/icon.ico --out=dist --overwrite"
+    "pack": "electron-packager . U.M.A.D.I.S._G.A.M.T. --platform=win32 --arch=x64 --icon=src/icon/icon.ico --out=dist --overwrite"
   },
   "keywords": [],
   "author": "",

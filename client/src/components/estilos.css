@@ -167,7 +167,7 @@ footer .container img.logo-GAMER {
 }
 
 footer .container img.logo-FJS {
-  max-width: 60px; /* Ajusta según sea necesario */
+  max-width: 48px; /* Ajusta según sea necesario */
   height: auto;
 }
 footer .container .logo-left {
@@ -233,13 +233,13 @@ footer .container .logo-right {
 }
 .login-body {
   display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Cambiado a un degradado cálido */
+  color: #222; /* Cambiado a un tono oscuro */
 }
 
 .loginApp-container {
@@ -258,7 +258,7 @@ footer .container .logo-right {
 
 .logo:hover {
   transform: scale(1.1);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Sombra más intensa */
 }
 
 .login-container {
@@ -266,20 +266,21 @@ footer .container .logo-right {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2); /* Fondo ligeramente más claro */
   padding: 2rem;
   border-radius: 10px;
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
   max-width: 600px;
   width: 600%;
   text-align: center;
-  margin-left: auto; /* Empuja el contenedor hacia el centro */
-  margin-right: auto; /* Empuja el contenedor hacia el centro */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .login-container h1 {
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
+  color: #333; /* Cambiado a un tono oscuro */
 }
 
 .login-container .form-group {
@@ -290,6 +291,7 @@ footer .container .logo-right {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
+  color: #444; /* Cambiado a gris oscuro */
 }
 
 .login-container input {
@@ -297,14 +299,14 @@ footer .container .logo-right {
   padding: 0.75rem;
   border: none;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(240, 240, 240, 0.9); /* Fondo gris claro */
   font-size: 1rem;
 }
 
 .login-container button {
   width: 100%;
   padding: 0.75rem;
-  background: #4caf50;
+  background: #ff5722; /* Cambiado a un color anaranjado */
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -315,36 +317,38 @@ footer .container .logo-right {
 }
 
 .login-container button:hover {
-  background: #45a049;
+  background: #e64a19; /* Anaranjado más oscuro */
 }
 
 .login-container button:active {
   transform: scale(0.98);
 }
+
 .logos-container {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Alinea los logos a la izquierda */
-  gap: 2rem; /* Espacio entre los logos */
-  padding: 1rem; /* Espaciado interno */
-  border: 1px solid #ddd; /* Borde */
-  border-radius: 8px; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
-  background-color: #e0d3f1; /* Fondo blanco */
+  justify-content: flex-start;
+  gap: 2rem;
+  padding: 1rem;
+  border: 1px solid #ccc; /* Borde gris */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra más fuerte */
+  background-color: #ffe0b2; /* Fondo naranja pastel */
 }
 
 .collaboration {
   display: flex;
   align-items: center;
-  gap: 1rem; /* Espacio entre el texto y el logo */
+  gap: 1rem;
 }
 
 .collaboration p {
   margin: 0;
   font-size: 0.8rem;
   font-weight: bold;
-  color: #000000;
+  color: #555; /* Cambiado a gris intermedio */
 }
+
 
 /* Estilos para la barra de filtros */
 .filter-bar {

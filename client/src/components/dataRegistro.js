@@ -67,7 +67,7 @@ export async function mostrarPerfil(id_registro_discapacidad) {
     const buttonsContainer = document.createElement("div");
     buttonsContainer.className = "profile-buttons";
     buttonsContainer.appendChild(createButton("Editar Registro", () => editarRegistro(id_registro_discapacidad), 'btn btn-success me-2'));
-    buttonsContainer.appendChild(createButton("Ver Historial", () => verHistorial(id_registro_discapacidad), 'btn btn-secondary me-2'));
+    buttonsContainer.appendChild(createButton("Ver Historial", () => verHistorial(id_registro_discapacidad, data.nombre_apellido), 'btn btn-secondary me-2'));
     buttonsContainer.appendChild(createButton("Registro de Atención", () => registrarAtencion(data), 'btn btn-warning'));
     
 
@@ -127,9 +127,9 @@ function createButton(text, onClick, className) {
 function editarRegistro(id_registro_discapacidad) {
     updateRegistro(id_registro_discapacidad);
 }
-function verHistorial(id_registro_discapacidad) { 
+function verHistorial(id_registro_discapacidad, nombre_pcd) { 
     document.getElementById('listaAntencion').style.display = 'block';
-    tablaPaciente(id_registro_discapacidad);
+    tablaPaciente(id_registro_discapacidad, nombre_pcd);
     document.getElementById('dataRegistro').style.display = 'none';
 }
 function registrarAtencion(data) {

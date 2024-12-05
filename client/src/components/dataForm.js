@@ -249,15 +249,13 @@ const nombreFamiliar = createInputWithLabel('nombre_familiar', 'text', "", "Nomb
   const conyuge = createInputWithLabel('conyuge_pcd', 'text', "", "Conyuge de PcD", false);
   rightHalf.appendChild(conyuge);
   //DATOS DE CONTACTO//
-  const direccion = createInputWithLabel('direc_domicilio', 'text', "", "Direccion de domicilio", false);
+  const direccion = createInputWithLabel('direc_domicilio', 'text', "", "Direccion de domicilio - Comunidad", false);
   rightHalf.appendChild(direccion);
   const distritoDomicilio = createSelectWithLabel('distrito_domicilio', [
     { value: '', text: 'Seleccione una opción' },
-    { value: 'BULO BULO', text: 'BULO BULO' },
-    { value: 'RIO BLANCO', text: 'RIO BLANCO' },
-    { value: 'ENTRE RIOS', text: 'ENTRE RIOS' },
-    { value: 'MANCO KAPAC', text: 'MANCO KAPAC' },
-    { value: 'ISARZAMA', text: 'ISARZAMA' }
+    { value: 'TACOPAYA', text: 'TACOPAYA' },
+    { value: 'VENTILLA', text: 'VENTILLA' },
+    { value: 'TOTORAPAMPA', text: 'TOTORAPAMPA' }
   ], 'Distrito', false);
   rightHalf.appendChild(distritoDomicilio);
   const numCelular = createInputWithLabel('telefono_pcd', 'number', "", "Numero de Celular", false);
@@ -275,9 +273,8 @@ const nombreFamiliar = createInputWithLabel('nombre_familiar', 'text', "", "Nomb
   rightHalf.appendChild(motivoCierre);
   const afiliacion = createSelectWithLabel('afiliacion_opcd', [
     { value: '', text: 'Seleccione una opción' },
-      { value: 'BULO BULO', text: 'BULO BULO' },
-      { value: 'ENTRE RIOS', text: 'ENTRE RIOS'},
-      { value: 'NINGUNO', text: 'NINGUNO'}
+      { value: 'SI', text: 'SI' },
+      { value: 'NO', text: 'NO'}
     ], 'Afiliación a una OPcD', false);
   rightHalf.appendChild(afiliacion);
   const fuenteInfo = createInputWithLabel('fuente_informacion', 'text', "", "Fuente de Información", false);
@@ -342,130 +339,134 @@ formContainer.appendChild(profileTitle);
 formContainer.appendChild(form);
 // Manejar el evento de envío del formulario
 saveButton.addEventListener('click', async function(e) {
-    e.preventDefault(); // Prevenir el envío por defecto
-    // Verificar campos obligatorios
-    const requiredFields = form.querySelectorAll('input[required]');
-    let isValid = true;
+  e.preventDefault(); // Prevenir el envío por defecto
 
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            isValid = false;
-            field.classList.add('is-invalid'); // Marca el campo como inválido
-            // Agrega el mensaje de error si no existe
-            let error = field.parentElement.querySelector('.error-message');
-            if (!error) {
-                error = document.createElement('div');
-                error.className = 'error-message text-danger';
-                error.textContent = 'Este campo es obligatorio.';
-                field.parentElement.appendChild(error);
-            }
-        } else {
-            field.classList.remove('is-invalid'); // Quita el estilo de error si se llena
-            const error = field.parentElement.querySelector('.error-message');
-            if (error) {
-                field.parentElement.removeChild(error);
-            }
-        }
-    });
+  // Deshabilitar el botón para evitar clics múltiples
+  saveButton.disabled = true;
 
-    if (!isValid) {
-        const messageDiv = document.getElementById('message');
-        messageDiv.textContent = 'Por favor, llena todos los campos obligatorios.';
-        messageDiv.className = 'alert alert-danger';
-        messageDiv.style.display = 'block';
-        setTimeout(() => {
-            messageDiv.textContent = '';
-            messageDiv.className = '';
-        }, 3000);
-        return; // Detener el envío si hay campos vacíos
-    }
+  // Verificar campos obligatorios
+  const requiredFields = form.querySelectorAll('input[required]');
+  let isValid = true;
 
-    const formData = getFromData();
-    console.log(formData);
-    
-    // Enviar los datos con fetch a tu backend
-    try{ 
-      const response = await fetch(`${serverUrl}/registro-pcd/${id_municipio}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    });
-    const data = await response.json();
-    if (response.ok) {
-       // Muestra un mensaje de éxito
-       form.reset();
-       /*document.getElementById('dataList').style.display = 'block';
-       document.getElementById('searchInput').style.display = 'block';
-       document.getElementById('filterData').style.display = 'block';
-       document.getElementById('showDataList').style.display = 'block';
-       document.getElementById('showProductForm').style.display = 'block';
-       document.getElementById('productForm').style.display = 'none';
-       document.getElementById('editData').style.display = 'none';*/
-       document.getElementById('showDataList').style.display = 'block';
-       document.getElementById('ReporteFuncionario').style.display = 'block';
-      document.getElementById('customFilters').style.display = 'block';
-      document.getElementById('estadistica').style.display = 'block';
-  
-       initializeTable();
-       const messageDiv = document.getElementById('message');
-      messageDiv.textContent = 'Registro completado con éxito.';
-      messageDiv.className = 'alert alert-success';
-      messageDiv.style.display = 'block';
-      setTimeout(() => {
-        messageDiv.textContent = '';
-        messageDiv.className = '';
-      }, 3000);
-    } else {
+  requiredFields.forEach(field => {
+      if (!field.value.trim()) {
+          isValid = false;
+          field.classList.add('is-invalid'); // Marca el campo como inválido
+          // Agrega el mensaje de error si no existe
+          let error = field.parentElement.querySelector('.error-message');
+          if (!error) {
+              error = document.createElement('div');
+              error.className = 'error-message text-danger';
+              error.textContent = 'Este campo es obligatorio.';
+              field.parentElement.appendChild(error);
+          }
+      } else {
+          field.classList.remove('is-invalid'); // Quita el estilo de error si se llena
+          const error = field.parentElement.querySelector('.error-message');
+          if (error) {
+              field.parentElement.removeChild(error);
+          }
+      }
+  });
+
+  if (!isValid) {
       const messageDiv = document.getElementById('message');
-      messageDiv.textContent = data.message || 'Error al guardar el registro.';
+      messageDiv.textContent = 'Por favor, llena todos los campos obligatorios.';
       messageDiv.className = 'alert alert-danger';
       messageDiv.style.display = 'block';
       setTimeout(() => {
-        messageDiv.textContent = '';
-        messageDiv.className = '';
+          messageDiv.textContent = '';
+          messageDiv.className = '';
       }, 3000);
-    }
-    } catch (error) {
+
+      // Volver a habilitar el botón si hay errores de validación
+      saveButton.disabled = false;
+      return; // Detener el envío si hay campos vacíos
+  }
+
+  const formData = getFromData();
+  console.log(formData);
+
+  // Enviar los datos con fetch a tu backend
+  try { 
+      const response = await fetch(`${serverUrl}/registro-pcd/${id_municipio}`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+          // Muestra un mensaje de éxito
+          form.reset();
+          document.getElementById('showDataList').style.display = 'block';
+          document.getElementById('ReporteFuncionario').style.display = 'block';
+          document.getElementById('customFilters').style.display = 'block';
+          document.getElementById('estadistica').style.display = 'block';
+
+          initializeTable();
+          const messageDiv = document.getElementById('message');
+          messageDiv.textContent = 'Registro completado con éxito.';
+          messageDiv.className = 'alert alert-success';
+          messageDiv.style.display = 'block';
+          setTimeout(() => {
+              messageDiv.textContent = '';
+              messageDiv.className = '';
+          }, 3000);
+      } else {
+          const messageDiv = document.getElementById('message');
+          messageDiv.textContent = data.message || 'Error al guardar el registro.';
+          messageDiv.className = 'alert alert-danger';
+          messageDiv.style.display = 'block';
+          setTimeout(() => {
+              messageDiv.textContent = '';
+              messageDiv.className = '';
+          }, 3000);
+      }
+  } catch (error) {
       const messageDiv = document.getElementById('message');
       messageDiv.textContent = 'Error al guardar el registro.';
       messageDiv.className = 'alert alert-danger';
       messageDiv.style.display = 'block';
       setTimeout(() => {
-        messageDiv.textContent = '';
-        messageDiv.className = '';
+          messageDiv.textContent = '';
+          messageDiv.className = '';
       }, 3000);
-    }
+  } finally {
+      // Volver a habilitar el botón después de que se procese la solicitud
+      saveButton.disabled = false;
+  }
 });
 export function getFromData() {
   const formData = {
-    nombre_apellido: document.getElementById('nombre_apellido').value,
+    nombre_apellido: document.getElementById('nombre_apellido').value.toUpperCase(),
     fecha_nacimiento: document.getElementById('fecha_nacimiento').value === "" ? null : document.getElementById('fecha_nacimiento').value,
     sexo: document.getElementById('sexo').value,
     nro_ci: getIntValue('nro_ci'),
     estado_civil: document.getElementById('estado_civil').value,
-    idioma_pcd: document.getElementById('idioma_pcd').value,
+    idioma_pcd: document.getElementById('idioma_pcd').value.toUpperCase(),
     tipo_discapacidad: document.getElementById('tipo_discapacidad').value,
     grado_discapacidad: document.getElementById('grado_discapacidad').value,
-    deficiencia: document.getElementById('deficiencia').value,
+    deficiencia: document.getElementById('deficiencia').value.toUpperCase(),
     edad_inicio_discapacidad: getIntValue('edad_inicio_discapacidad'),
-    dispositivo_utiliza: document.getElementById('dispositivo_utiliza').value,
+    dispositivo_utiliza: document.getElementById('dispositivo_utiliza').value.toUpperCase(),
     nivel_escolaridad: document.getElementById('nivel_escolaridad').value,
     info_vivienda: document.getElementById('info_vivienda').value,
     info_laboral: document.getElementById('info_laboral').value,
-    nombre_familiar: document.getElementById('nombre_familiar').value,
+    nombre_familiar: document.getElementById('nombre_familiar').value.toUpperCase(),
     nro_hijos_pcd: getIntValue('nro_hijos_pcd'),
-    conyuge_pcd: document.getElementById('conyuge_pcd').value,
-    direc_domicilio: document.getElementById('direc_domicilio').value,
+    conyuge_pcd: document.getElementById('conyuge_pcd').value.toUpperCase(),
+    direc_domicilio: document.getElementById('direc_domicilio').value.toUpperCase(),
     distrito_domicilio: document.getElementById('distrito_domicilio').value,
     telefono_pdc: getIntValue('telefono_pcd'),
     telefono_referencia: getIntValue('telefono_referencia'),
     permanencia: document.getElementById('permanenciaForm').value,
-    motivo_cierre: document.getElementById('motivo_cierre').value,
+    motivo_cierre: document.getElementById('motivo_cierre').value.toUpperCase(),
     numero_hermanos_pcd: getIntValue('numero_hermanos_pcd'),
     afiliacion_opcd: document.getElementById('afiliacion_opcd').value,
-    fuente_informacion: document.getElementById('fuente_informacion').value,
+    fuente_informacion: document.getElementById('fuente_informacion').value.toUpperCase(),
 };
 return formData;
 }

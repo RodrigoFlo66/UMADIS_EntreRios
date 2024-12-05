@@ -3,7 +3,7 @@ import * as Tabulator from '../../node_modules/tabulator-tables/dist/js/tabulato
 import {updateAtencion} from './updateDataAtencion.js';
 import { mostrarPerfil } from './dataRegistro.js';
 
-export async function tablaPaciente(id_registro_discapacidad) {
+export async function tablaPaciente(id_registro_discapacidad, nombre_pcd) {
 ///////////////////////
     document.getElementById('listaAntencion').style.display = 'block';
     document.getElementById('atrasHistoricoPaciente').style.display = 'block';
@@ -11,9 +11,13 @@ export async function tablaPaciente(id_registro_discapacidad) {
     
     const mainContainer = document.getElementById("listaAntencion"); // Asegúrate de tener este contenedor en tu HTML
     mainContainer.innerHTML = ""; // Limpia el contenido anterior
+    // Paso 1: Cargar datos de la API o fuente de datos
+    const response = await fetch(`${serverUrl}/registros-atencion/${id_registro_discapacidad}`);
+    const result = await response.json();
+    const data = result.registros;
     // Crear y agregar el título
     const profileTitle = document.createElement("h2");
-    profileTitle.textContent = "REPORTE HISTÓRICO DEL PACIENTE";
+    profileTitle.textContent = `REPORTE HISTÓRICO DE ${nombre_pcd}`;
     profileTitle.className = "text-center text-primary mb-4";
     mainContainer.appendChild(profileTitle);
     filterTable(mainContainer); // Agrega la barra de filtros personalizados
@@ -21,10 +25,6 @@ export async function tablaPaciente(id_registro_discapacidad) {
     const tableContainer = document.createElement("div");
     tableContainer.id = "atencionList";
     mainContainer.appendChild(tableContainer);
-    // Paso 1: Cargar datos de la API o fuente de datos
-    const response = await fetch(`${serverUrl}/registros-atencion/${id_registro_discapacidad}`);
-    const result = await response.json();
-    const data = result.registros;
     
     // Configuración de la localización en español
     const spanishLocale = {
@@ -52,7 +52,7 @@ export async function tablaPaciente(id_registro_discapacidad) {
             mutator: (value) => value ? value.split('T')[0] : 'N/A' 
         },
         { title: "Lugar", field: "lugar_registro", headerFilter: "input" },
-        { title: "Informante", field: "nombre_informante", headerFilter: "input" },
+        { title: "Atención realizada por", field: "nombre_informante", headerFilter: "input" },
         {
             title: "Adjunto",
             field: "link_adjunto",

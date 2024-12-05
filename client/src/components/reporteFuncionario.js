@@ -9,7 +9,7 @@ export async function tablaFuncionario() {
     mainContainer.innerHTML = ""; // Limpia el contenido anterior
     // Crear y agregar el título
     const profileTitle = document.createElement("h2");
-    profileTitle.textContent = "REPORTE HISTOÓRICO DE REGISTROS DE ATENCIÓN";
+    profileTitle.textContent = "REPORTE HISTÓRICO DEL FUNCIONARIO";
     profileTitle.className = "text-center text-primary mb-4";
     mainContainer.appendChild(profileTitle);
     filterTable(mainContainer); // Agrega la barra de filtros personalizados

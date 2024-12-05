@@ -1,5 +1,6 @@
 import { loadNav } from '../components/Nav.js'; 
 import { initializeTable } from './DataList.js';
+import { serverUrl } from '../server.config.js';
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const pasword = document.getElementById('password').value;
 
     try {
-      const response = await fetch('http://localhost:8080/login', {
+      const response = await fetch(`${serverUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
