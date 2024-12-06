@@ -63,7 +63,7 @@ const generateColumns = (data) => {
 const table = new Tabulator.TabulatorFull(tableContainer, {
     data: augmentedData,
     layout: "fitColumns",
-    placeholder: "Cargando datos...",
+    placeholder: "Sin registros disponibles.",
     locale: true,
     langs: {
         "es": spanishLocale,

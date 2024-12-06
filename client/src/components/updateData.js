@@ -76,6 +76,7 @@ export async function  updateRegistro(id_registro_discapacidad) {
     const editHandler = async function() {
         const formData = getFromData();
         console.log(formData);
+        editButton.disabled = true;
         try {
             // Verificar campos obligatorios
             const form=document.getElementById('productForm');
@@ -112,6 +113,7 @@ export async function  updateRegistro(id_registro_discapacidad) {
                     messageDiv.textContent = '';
                     messageDiv.className = '';
                 }, 3000);
+                editButton.disabled = false;
                 return; // Detener el envío si hay campos vacíos
             }
             // Realiza la solicitud PUT para actualizar el registro
@@ -162,6 +164,9 @@ export async function  updateRegistro(id_registro_discapacidad) {
               messageDiv.textContent = '';
               messageDiv.className = '';
             }, 3000);
+        } finally {
+            // Volver a habilitar el botón después de que se procese la solicitud
+            editButton.disabled = false;
         }
     };
     // Añade el nuevo event listener

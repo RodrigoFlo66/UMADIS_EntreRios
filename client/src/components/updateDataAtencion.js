@@ -84,97 +84,102 @@ function updateFileInputWithLink(inputId, fileLink) {
     if (editButton.eventListenerAdded) {
         editButton.removeEventListener('click', editButton.handler);
     }
-    // Añade un manejador de eventos al botón para cambiar su funcionalidad cuando se haga clic.
-    const editHandler = async function() {
-        const formData = getFromData();
-        console.log(formData);
-        try {
-            // Verificar campos obligatorios
-            const form=document.getElementById('atencionForm');
-            const requiredFields = form.querySelectorAll('input[required]');
-            let isValid = true;
+   // Añade un manejador de eventos al botón para cambiar su funcionalidad cuando se haga clic.
+   const editHandler = async function() {
+    const formData = getFromData();
+    console.log(formData);
+    editButton.disabled = true;
+    try {
+        // Verificar campos obligatorios
+        const form=document.getElementById('atencionForm');
+        const requiredFields = form.querySelectorAll('input[required]');
+        let isValid = true;
 
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    isValid = false;
-                    field.classList.add('is-invalid'); // Marca el campo como inválido
-                    // Agrega el mensaje de error si no existe
-                    let error = field.parentElement.querySelector('.error-message');
-                    if (!error) {
-                        error = document.createElement('div');
-                        error.className = 'error-message text-danger';
-                        error.textContent = 'Este campo es obligatorio.';
-                        field.parentElement.appendChild(error);
-                    }
-                } else {
-                    field.classList.remove('is-invalid'); // Quita el estilo de error si se llena
-                    const error = field.parentElement.querySelector('.error-message');
-                    if (error) {
-                        field.parentElement.removeChild(error);
-                    }
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid'); // Marca el campo como inválido
+                // Agrega el mensaje de error si no existe
+                let error = field.parentElement.querySelector('.error-message');
+                if (!error) {
+                    error = document.createElement('div');
+                    error.className = 'error-message text-danger';
+                    error.textContent = 'Este campo es obligatorio.';
+                    field.parentElement.appendChild(error);
                 }
-            });
-
-            if (!isValid) {
-                const messageDiv = document.getElementById('message');
-                messageDiv.textContent = 'Por favor, llena todos los campos obligatorios.';
-                messageDiv.className = 'alert alert-danger';
-                messageDiv.style.display = 'block';
-                setTimeout(() => {
-                    messageDiv.textContent = '';
-                    messageDiv.className = '';
-                }, 3000);
-                return; // Detener el envío si hay campos vacíos
-            }
-            // Realiza la solicitud PUT para actualizar el registro
-            const response = await fetch(`${serverUrl}/registro-atencion/${id_registro_atencion}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-    
-            if (response.ok) {
-            resetForm();
-            document.getElementById('showDataList').style.display = 'block';
-            document.getElementById('dataRegistro').style.display = 'block';
-            mostrarPerfil(id_registro_discapacidad);
-            document.getElementById('atencionForm').style.display = 'none';
-            document.getElementById('atrasHistoricoPaciente').style.display = 'none';
-                // Muestra un mensaje de éxito
-            
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = 'Registro actualizado con éxito.';
-            messageDiv.className = 'alert alert-success';
-            messageDiv.style.display = 'block';
-            setTimeout(() => {
-              messageDiv.textContent = '';
-              messageDiv.className = '';
-            }, 3000);
             } else {
-                const messageDiv = document.getElementById('message');
-            messageDiv.textContent = 'Error al actualizar el registro.';
-            messageDiv.className = 'alert alert-danger';
-            messageDiv.style.display = 'block';
-            setTimeout(() => {
-              messageDiv.textContent = '';
-              messageDiv.className = '';
-            }, 3000);
+                field.classList.remove('is-invalid'); // Quita el estilo de error si se llena
+                const error = field.parentElement.querySelector('.error-message');
+                if (error) {
+                    field.parentElement.removeChild(error);
+                }
             }
-        } catch (error) {
+        });
+
+        if (!isValid) {
             const messageDiv = document.getElementById('message');
-            messageDiv.textContent = 'Error al actualizar el registro.';
+            messageDiv.textContent = 'Por favor, llena todos los campos obligatorios.';
             messageDiv.className = 'alert alert-danger';
             messageDiv.style.display = 'block';
             setTimeout(() => {
-              messageDiv.textContent = '';
-              messageDiv.className = '';
+                messageDiv.textContent = '';
+                messageDiv.className = '';
             }, 3000);
+            editButton.disabled = false;
+            return; // Detener el envío si hay campos vacíos
         }
-    };
-    // Añade el nuevo event listener
-    editButton.addEventListener('click', editHandler);
-    editButton.handler = editHandler;
-    editButton.eventListenerAdded = true;
+        // Realiza la solicitud PUT para actualizar el registro
+        const response = await fetch(`${serverUrl}/registro-atencion/${id_registro_atencion}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+        resetForm();
+        document.getElementById('showDataList').style.display = 'block';
+        document.getElementById('dataRegistro').style.display = 'block';
+        mostrarPerfil(id_registro_discapacidad);
+        document.getElementById('atencionForm').style.display = 'none';
+        document.getElementById('atrasHistoricoPaciente').style.display = 'none';
+            // Muestra un mensaje de éxito
+        
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = 'Registro actualizado con éxito.';
+        messageDiv.className = 'alert alert-success';
+        messageDiv.style.display = 'block';
+        setTimeout(() => {
+          messageDiv.textContent = '';
+          messageDiv.className = '';
+        }, 3000);
+        } else {
+            const messageDiv = document.getElementById('message');
+        messageDiv.textContent = 'Error al actualizar el registro.';
+        messageDiv.className = 'alert alert-danger';
+        messageDiv.style.display = 'block';
+        setTimeout(() => {
+          messageDiv.textContent = '';
+          messageDiv.className = '';
+        }, 3000);
+        }
+    } catch (error) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = 'Error al actualizar el registro.';
+        messageDiv.className = 'alert alert-danger';
+        messageDiv.style.display = 'block';
+        setTimeout(() => {
+          messageDiv.textContent = '';
+          messageDiv.className = '';
+        }, 3000);
+    } finally {
+        // Volver a habilitar el botón después de que se procese la solicitud
+        editButton.disabled = false;
+    }
+};
+// Añade el nuevo event listener
+editButton.addEventListener('click', editHandler);
+editButton.handler = editHandler;
+editButton.eventListenerAdded = true;
 }  
