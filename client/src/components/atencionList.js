@@ -72,7 +72,7 @@ export async function tablaPaciente(id_registro_discapacidad, nombre_pcd) {
     const table = new Tabulator.TabulatorFull(tableContainer, {
         data: data,
         layout: "fitColumns",
-        placeholder: "Cargando datos...",
+        placeholder: "Sin registros disponibles.",
         pagination: "local",
         paginationSize: 15,
         locale: true,

@@ -18,7 +18,7 @@ const createAndUploadFile = async (file) => {
     }
     const fileMetadata = {
         name: file.originalname,
-        parents: ['19oSSkzD061dmbPJqLGZjcZVyJ4RPhTUU'],
+        parents: ['1T03XZhweyc_LKdI-GP7f74HsDoZrTRTI'],
     };
 
     const media = {

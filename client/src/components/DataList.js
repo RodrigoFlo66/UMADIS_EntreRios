@@ -64,7 +64,7 @@ export async function initializeTable() {
     const table = new Tabulator.TabulatorFull(tableContainer, {
         data: data,
         layout: "fitColumns",
-        placeholder: "Cargando datos...",
+        placeholder: "Sin registros disponibles.", // Mensaje dinámico
         pagination: "local",
         paginationSize: 15,
         locale: true,
